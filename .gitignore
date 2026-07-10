@@ -1,0 +1,56 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# C extensions / binaries
+*.obj
+*.pdb
+
+# Logs and runtime
+logs/
+**/logs/
+*.log
+*.log.*
+crash_dumps/
+
+# Runtime caches and state
+cache/
+**/cache/
+ok_tasks/
+ok_templates/
+configs/devices.json
+configs/schedule_tasks_cache.json
+configs/_con_full_size.json
+
+# Screenshots and scratch work
+screenshots/
+**/screenshots/
+scratch/
+temp/
+tmp/
+*.tmp
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# IDE and OS files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Machine Learning datasets & weights (large binaries)
+training/raw_videos/
+training/extracted_frames/
+training/dataset/
+training/runs/
+training/annotations/*.txt
+!training/annotations/.gitkeep
