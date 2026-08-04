@@ -1,0 +1,140 @@
+import time
+
+from src.char.BaseChar import BaseChar, SwitchPriority
+
+
+class Jinhsi(BaseChar):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.last_free_intro = 0  # Free intro (Unison) cooldown
+        self.has_free_intro = False
+        self.incarnation = False
+        self.incarnation_cd = False
+        self.last_fly_e_time = 0
+
+    def do_perform(self):
+        # Rexlent combat rotation:
+        # 1. Ground 4A / Intro -> Skill E enters Incarnation mode (Overflowing Radiance)
+        # 2. Mid-air 4A chain charges Illuminous Epiphany
+        # 3. Enhanced Skill E (50-stack Illuminous Epiphany Dragon Beam)
+        # 4. Resonance Liberation R nuke (Purging Light)
+        # 5. Jué Echo Q
+        # 6. Quickswap cancel via Unison outro to coordinated attackers (Yuanwu/Verina)
+        if self.incarnation:
+            self.handle_incarnation()
+            return self.switch_next_char()
+        elif self.has_intro or self.incarnation_cd:
+            self.handle_intro()
+            if self.incarnation:
+                self.handle_incarnation()
+            return self.switch_next_char()
+        else:
+            self.handle_intro()
+            if self.incarnation:
+                self.handle_incarnation()
+            elif self.click_echo():
+                pass
+            return self.switch_next_char()
+
+    def reset_state(self):
+        super().reset_state()
+        self.incarnation = False
+        self.has_free_intro = False
+        self.incarnation_cd = False
+
+    def get_switch_priority(self, current_char=None, has_intro=False, target_low_con=False):
+        if has_intro or self.incarnation or self.incarnation_cd:
+            self.logger.info(
+                f'switch priority max because has_intro {has_intro} incarnation {self.incarnation} incarnation_cd '
+                f'{self.incarnation_cd}')
+            return SwitchPriority.MUST
+        return SwitchPriority.NO
+
+    def switch_next_char(self, **args):
+        super().switch_next_char(free_intro=self.has_free_intro, target_low_con=True)
+        self.has_free_intro = False
+
+    def handle_incarnation(self):
+        # In Incarnation: Perform mid-air attacks to charge Illuminous Epiphany dragon beam
+        self.incarnation = False
+        self.logger.info('handle_incarnation: starting mid-air attack chain and Illuminous Epiphany')
+        start = time.time()
+        animation_start = 0
+        last_op = 'resonance'
+        self.task.in_liberation = True
+
+        # Mid-air attacks to unlock Illuminous Epiphany
+        self.continues_normal_attack(1.2)
+
+        while True:
+            if time.time() - start > 6:
+                self.logger.info('handle incarnation timeout')
+                break
+            if self.task.in_team()[0]:
+                if last_op == 'resonance':
+                    self.task.click(interval=0.1)
+                    last_op = 'click'
+                else:
+                    self.send_resonance_key()
+                    last_op = 'resonance'
+                if animation_start != 0:
+                    self.logger.info('Jinhsi handle_incarnation dragon beam complete')
+                    break
+            else:
+                if animation_start == 0:
+                    self.logger.info('Jinhsi handle_incarnation start animation')
+                    animation_start = time.time()
+                self.task.in_liberation = True
+            self.check_combat()
+            self.task.next_frame()
+        self.task.in_liberation = False
+
+        # Resonance Liberation nuke immediately after dragon beam
+        if self.liberation_available():
+            self.click_liberation()
+
+        # Jué Echo
+        if not self.click_echo():
+            self.task.click()
+
+        # Unison grants free intro for the next teammate
+        self.has_free_intro = True
+        self.add_freeze_duration(animation_start)
+        self.logger.info(f'handle_incarnation end {time.time() - start:.2f}s')
+
+    def handle_intro(self):
+        self.logger.info('handle_intro start')
+        start = time.time()
+
+        # If no intro, do normal attack chain to trigger Overflowing Radiance
+        if not self.has_intro:
+            self.continues_normal_attack(1.2)
+
+        while True:
+            elapsed = time.time() - start
+            if self.has_cd('resonance'):
+                if 0.3 < elapsed < 1.5:
+                    self.incarnation_cd = True
+                    if not self.click_echo():
+                        self.click()
+                    return
+                elif elapsed > 1.5:
+                    break
+            else:
+                self.send_resonance_key(interval=0.1)
+            self.task.next_frame()
+            self.check_combat()
+
+        self.last_fly_e_time = start
+        if self.click_liberation(send_click=True):
+            self.continues_normal_attack(0.3)
+        else:
+            self.continues_normal_attack(1.2)
+        self.logger.info(f'handle_intro end {time.time() - start:.2f}s')
+        self.incarnation = True
+        self.incarnation_cd = False
+
+    def wait_resonance(self):
+        while not self.resonance_available():
+            self.send_resonance_key(interval=0.1)
