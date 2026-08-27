@@ -1,0 +1,12 @@
+{
+    "Which to Farm": "Simulation Challenge",
+    "Which Tacet Suppression to Farm": "1 - Desorock Highland (Celestial Light & Havoc Eclipse)",
+    "Which Forgery Challenge to Farm": "1 - Misty Coast: Sword & Broadblade (Metallic Drip)",
+    "Material Selection": "Resonator EXP",
+    "Farm Nightmare Nest for Daily Echo": true,
+    "Always Burn Waveplates": true,
+    "Additional Tasks to Run After Daily Task": [
+        "Check Weekly Garden"
+    ],
+    "Exit After Task": false
+}
