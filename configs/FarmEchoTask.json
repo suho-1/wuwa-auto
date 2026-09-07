@@ -1,0 +1,14 @@
+{
+    "Target Boss": "All Weekly Bosses (Sweep)",
+    "Teleport to Boss": "Weekly Challenge",
+    "Weekly Boss Difficulty": "80",
+    "Repeat Farm Count": 100,
+    "Skip Locked Areas": true,
+    "Sweep Count per Boss": 50,
+    "Combat Wait Time": 2,
+    "Echo Pickup Method": "Yolo",
+    "Use Liberation": true,
+    "Switch to Healer before and after Combat": true,
+    "Claim Boss Rewards": false,
+    "Exit After Task": false
+}
