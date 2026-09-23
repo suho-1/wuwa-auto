@@ -1,0 +1,315 @@
+{
+  "game": "Wuthering Waves",
+  "region": "Gorges of Spirits",
+  "accuracy_notes": {
+    "primary_video": "All 57 stop numbers and timestamps are from the linked video's published chapter list. Its published text does not specify individual stop locations, puzzle types, solutions, or coordinates.",
+    "companion_video": "This is a different creator's labeled route. Its numbers and timestamps are NOT interchangeable with the primary video's.",
+    "null": "Not established by the available source text; not a claim that no puzzle or coordinate exists.",
+    "coordinate_format": "The two numeric triples below are reproduced exactly as reported by a player. Axis labels and correspondence to video stops are unverified."
+  },
+  "regional_checklist": {
+    "supply_chests_listed_by_Game8": 46,
+    "sonance_caskets": 2,
+    "blobflies": 2,
+    "viewpoints": 1,
+    "resonance_beacons": 2,
+    "area_quest": "Camp Raid",
+    "note": "A video's numbered stops can include collectibles and activities other than supply chests."
+  },
+  "primary_video_route": {
+    "creator": "ON Game",
+    "url": "https://www.youtube.com/watch?v=uZuuJ6MUKOc",
+    "numbered_stops": 57,
+    "stop_fields": [
+      "video_stop_number",
+      "video_timestamp"
+    ],
+    "unverified_fields_for_every_stop": {
+      "in_game_coordinates": null,
+      "individual_location": null,
+      "collectible_or_chest_type": null,
+      "puzzle_type": null,
+      "exact_unlock_steps": null
+    },
+    "route_maps": [
+      {
+        "route_map": 1,
+        "map_shown_at": "00:00",
+        "stops": [
+          [1, "00:05"],
+          [2, "00:57"],
+          [3, "01:23"],
+          [4, "02:10"],
+          [5, "03:46"],
+          [6, "04:50"],
+          [7, "06:07"],
+          [8, "06:44"],
+          [9, "07:55"],
+          [10, "08:33"],
+          [11, "09:53"],
+          [12, "10:24"],
+          [13, "11:07"],
+          [14, "11:42"],
+          [15, "12:09"],
+          [16, "12:41"],
+          [17, "13:03"],
+          [18, "13:25"],
+          [19, "13:46"],
+          [20, "14:42"]
+        ]
+      },
+      {
+        "route_map": 2,
+        "map_shown_at": "15:13",
+        "stops": [
+          [21, "15:18"],
+          [22, "16:07"],
+          [23, "17:15"],
+          [24, "17:53"],
+          [25, "18:52"],
+          [26, "19:34"],
+          [27, "19:56"],
+          [28, "20:54"],
+          [29, "21:46"],
+          [30, "22:19"],
+          [31, "22:32"],
+          [32, "22:55"],
+          [33, "23:17"],
+          [34, "23:41"],
+          [35, "23:57"],
+          [36, "24:31"],
+          [37, "25:09"],
+          [38, "25:35"],
+          [39, "25:56"],
+          [40, "26:41"],
+          [41, "27:14"],
+          [42, "28:01"],
+          [43, "28:30"]
+        ]
+      },
+      {
+        "route_map": 3,
+        "map_shown_at": "28:56",
+        "stops": [
+          [44, "29:01"],
+          [45, "29:34"],
+          [46, "30:36"],
+          [47, "30:49"],
+          [48, "31:16"],
+          [49, "31:40"],
+          [50, "32:06"],
+          [51, "32:31"],
+          [52, "33:04"],
+          [53, "33:23"],
+          [54, "33:39"],
+          [55, "34:10"],
+          [56, "34:47"]
+        ]
+      },
+      {
+        "route_map": 4,
+        "map_shown_at": "35:32",
+        "stops": [
+          [57, "35:37"]
+        ]
+      }
+    ]
+  },
+  "labeled_companion_route": {
+    "creator": "WoW Quests",
+    "url": "https://www.youtube.com/watch?v=NF2gq5728Ak",
+    "numbered_points": 58,
+    "mapping_to_primary_video_numbers": null,
+    "entry_fields": [
+      "companion_point_numbers",
+      "video_timestamp",
+      "collectible_or_reward",
+      "location_text",
+      "puzzle_type",
+      "unlock_playbook_key"
+    ],
+    "entries": [
+      [[1], "00:00", "supply chest", "Fissured Ledge", null, "inspect_and_open"],
+      [[2], "00:20", "Blobfly", null, "blobfly", "catch_blobfly"],
+      [[3], "00:41", "premium Tidal Heritage", null, null, "claim_tidal_heritage"],
+      [[4], "00:57", "supply chest", null, "training dummy", "training_dummy"],
+      [[5], "01:37", "supply chest", null, null, "inspect_and_open"],
+      [[6], "01:54", "advanced supply chest", null, "color match", "color_match_sequence_unverified"],
+      [[7, 8], "02:39", "supply chests", null, null, "inspect_and_open"],
+      [[9], "03:04", "supply chest", null, "hover target", "hover_target"],
+      [[10], "03:25", "supply chest", null, null, "inspect_and_open"],
+      [[11], "03:45", "Tidal Heritage", null, null, "claim_tidal_heritage"],
+      [[12], "03:57", "supply chest", null, null, "inspect_and_open"],
+      [[13], "04:15", "supply chest", null, null, "inspect_and_open"],
+      [[14], "04:32", "hidden supply chest", null, "hidden trigger unspecified", "hidden_trigger_unverified"],
+      [[15], "05:04", "supply chest", null, "Mutterfly", "follow_mutterflies"],
+      [[16], "05:27", "hidden supply chest", null, "hidden trigger unspecified", "hidden_trigger_unverified"],
+      [[17], "05:46", "supply chest", null, "hover target", "hover_target"],
+      [[18], "06:07", "supply chest", null, null, "inspect_and_open"],
+      [[19], "06:24", "Tidal Heritage", null, null, "claim_tidal_heritage"],
+      [[20, 21], "06:45", "supply chest and Torn Pages mentioned together", null, "training dummy; Torn Pages", "training_dummy_and_separate_page"],
+      [[22], "07:27", "advanced supply chest", null, null, "inspect_and_open"],
+      [[23], "08:10", "Mutterfly", null, "Mutterfly", "follow_mutterflies"],
+      [[24], "08:51", "hidden supply chest", null, "hidden trigger unspecified", "hidden_trigger_unverified"],
+      [[25], "09:17", "Mutterfly", null, "Mutterfly", "follow_mutterflies"],
+      [[26], "09:52", "supply chest", null, "time-trial challenge", "time_trial"],
+      [[27], "10:34", "hidden supply chest", null, "hidden trigger unspecified", "hidden_trigger_unverified"],
+      [[28], "10:58", "supply chest", null, "breakable rock", "break_rock"],
+      [[29], "11:22", "supply chest", null, null, "inspect_and_open"],
+      [[30], "11:42", "Mutterfly", null, "Mutterfly", "follow_mutterflies"],
+      [[31], "12:15", "hidden supply chest", null, "hidden trigger unspecified", "hidden_trigger_unverified"],
+      [[32], "12:34", "supply chest", null, "hover target", "hover_target"],
+      [[33], "12:57", "supply chest", "Three-rock chest reported on a cliff south of Clouded Cliffs overlooking Memento Square; correspondence with this video point is not frame-verified", "three breakable rocks", "break_three_rocks"],
+      [[34, 35], "13:24", "two Sonance Caskets", "One in the stone dragon's mouth and one above its head; correspondence with these video points is not frame-verified", null, "collect_dragon_caskets"],
+      [[36], "14:08", "viewpoint", "Memento Square is identified as the region's viewpoint in a separate walkthrough", null, "activate_viewpoint"],
+      [[37, 38], "14:27", "supply chests", null, null, "inspect_and_open"],
+      [[39], "14:50", "supply chest", null, null, "inspect_and_open"],
+      [[40], "15:04", "supply chest", null, null, "inspect_and_open"],
+      [[41], "15:29", "hidden supply chest", null, "grapple traversal", "grapple_hidden_chest"],
+      [[42], "16:03", "advanced supply chest", null, "magnetic cube", "magnetic_cube"],
+      [[43], "16:39", "Tidal Heritage", null, null, "claim_tidal_heritage"],
+      [[44], "16:57", "supply chest", null, null, "inspect_and_open"],
+      [[45], "17:33", "Mutterfly", null, "Mutterfly", "follow_mutterflies"],
+      [[46], "18:04", "advanced supply chest", null, "Corroder Spikes", "corroder_spikes"],
+      [[47], "18:47", "supply chest", null, "breakable rock", "break_rock"],
+      [[48], "19:09", "advanced supply chest", null, null, "inspect_and_open"],
+      [[49], "19:30", "supply chest", null, null, "inspect_and_open"],
+      [[50], "19:48", "supply chest", null, "Encryption Block", "encryption_block"],
+      [[51], "20:46", "Blobfly", null, "Blobfly", "catch_blobfly"],
+      [[52], "21:11", "Mutterfly", null, "Mutterfly", "follow_mutterflies"],
+      [[53], "21:40", "Tidal Heritage", null, null, "claim_tidal_heritage"],
+      [[54], "21:56", "Tidal Heritage", null, null, "claim_tidal_heritage"],
+      [[55, 56, 57, 58], "22:14", "three Mutterflies and an advanced supply chest", null, "three-Mutterfly puzzle", "three_mutterflies"]
+    ]
+  },
+  "unlock_playbook": {
+    "inspect_and_open": {
+      "steps": ["Find the item at the companion-video timestamp.", "Open it if accessible; if sealed, inspect nearby enemies or interactables."],
+      "limitation": "The chapter label supplies no more specific unlock condition."
+    },
+    "catch_blobfly": {
+      "steps": ["Approach carefully because a Blobfly can flee.", "Attack it, using a ranged attack if needed."]
+    },
+    "claim_tidal_heritage": {
+      "steps": ["Locate the Tidal Heritage at the listed timestamp.", "Interact with it; clear nearby guards first if it is sealed."],
+      "limitation": "Individual guards or combat conditions are not specified in the chapter list."
+    },
+    "training_dummy": {
+      "steps": ["Find and attack the nearby training dummies.", "If activating all of them does not finish the puzzle, check the surroundings for an order clue."],
+      "exact_order": null
+    },
+    "color_match_sequence_unverified": {
+      "steps": ["Inspect the color-match puzzle shown at 01:54 in the companion video.", "Match its displayed color pattern to unlock the advanced chest."],
+      "exact_colors_positions_and_input_order": null
+    },
+    "hover_target": {
+      "steps": ["Activate the target challenge.", "Use a ranged attack to hit every spawned target; obey any timer shown in-game."]
+    },
+    "hidden_trigger_unverified": {
+      "steps": ["Check the companion video at the item's timestamp for the precise environmental trigger."],
+      "exact_trigger": null,
+      "warning": "Do not assume that every chest labeled 'hidden' comes from breaking the same kind of object."
+    },
+    "follow_mutterflies": {
+      "steps": ["Find the glowing Mutterfly.", "Follow or guide it to its destination.", "Check for a spawned chest or the next Mutterfly."]
+    },
+    "training_dummy_and_separate_page": {
+      "steps": ["Solve the nearby training-dummy interaction to obtain its chest.", "Collect the nearby Torn Page as a separate pickup if present."],
+      "warning": "The chapter title mentions both activities; it does not establish that collecting the page unlocks the chest.",
+      "exact_dummy_order": null
+    },
+    "time_trial": {
+      "steps": ["Activate the challenge.", "Complete the objective displayed in-game before its timer expires.", "Collect the resulting chest."],
+      "specific_trial_objective": null
+    },
+    "break_rock": {
+      "steps": ["Find the breakable rock shown at the timestamp.", "Attack and destroy it.", "Check the exposed or newly spawned chest."]
+    },
+    "break_three_rocks": {
+      "steps": ["Search the cliff south of Clouded Cliffs overlooking Memento Square.", "Break all three rocks at the cliff edge.", "Collect the chest that appears."]
+    },
+    "collect_dragon_caskets": {
+      "steps": ["Go to the stone dragon in Gorges of Spirits.", "Collect one Sonance Casket at its mouth.", "Climb to the area immediately above its head for the other."]
+    },
+    "activate_viewpoint": {
+      "steps": ["Find the holographic viewpoint telescope.", "Interact with it to register the scenery."]
+    },
+    "grapple_hidden_chest": {
+      "steps": ["Look for a nearby mechanism creating grapple points.", "Activate it and use the grapple route.", "Check its destination for the hidden chest."],
+      "exact_grapple_sequence": null
+    },
+    "magnetic_cube": {
+      "steps": ["Attack the cube from the side that moves it in the desired direction.", "Move it along the highlighted conveyor arrows.", "Guide it onto the glowing blue destination tile.", "If a holographic wall blocks it, check for a connected switch."],
+      "exact_direction_sequence_for_this_cube": null
+    },
+    "corroder_spikes": {
+      "steps": ["Interact with a Corroder so it follows you.", "Lead it into the obstructing Spike to destroy that Spike.", "Find another Corroder for each additional Spike.", "Open the revealed advanced chest."]
+    },
+    "encryption_block": {
+      "steps": ["Use the Levitator to pick up nearby Key Repeaters.", "Place and orient them so their emitted pulses illuminate every required tile.", "Open the unlocked chest."],
+      "exact_repeater_positions_for_this_board": null
+    },
+    "three_mutterflies": {
+      "steps": ["Locate the three Mutterflies shown beginning at 22:14.", "Guide each to its destination.", "Claim the advanced supply chest after completing the group."]
+    }
+  },
+  "quest_locked_chest_plan": {
+    "quest": "Camp Raid",
+    "start_area": "Makeshift camp near Clouded Cliffs and its Resonance Nexus",
+    "steps": [
+      "Approach Patrol Officers Cunren and Lingdi and listen to their conversation.",
+      "Set in-game time to 12:00.",
+      "Talk to Lingdi and agree to help raid the Exile-occupied camp.",
+      "Follow the quest markers and rescue the hostages.",
+      "For the final two locked cells, insert the available Induction Cells into their Cell Sockets.",
+      "Defeat the Exiles, including those in the camp center and elevated area.",
+      "Talk to Cunren to finish the quest; check the camp for its associated premium chest."
+    ],
+    "primary_video_stop_number": null
+  },
+  "optional_torn_page_plan": {
+    "purpose": "Collect four pages to start Tales of the Past and Present: Gorges of Spirits; do not treat this as a confirmed prerequisite for the training-dummy chest.",
+    "locations": [
+      "Above the highest scaffolding behind Jué's statue in Memento Square.",
+      "Inside the first building left of the stairs when entering the Clouded Cliffs base from its Resonance Nexus; on a crate.",
+      "On top of the watchtower beside that building.",
+      "On top of an unmarked watchtower east of Clouded Cliffs."
+    ],
+    "after_collecting_all_four": "Take them to the Storyteller in Jinzhou."
+  },
+  "hidden_chest_checks_not_matched_to_primary_video_stops": [
+    {
+      "trigger": "Break a pile of wooden crates.",
+      "location": "Platform southeast of the Clouded Cliffs Resonance Nexus, according to a player report.",
+      "reported_coordinate_triplet": [-1264, 478, 138],
+      "primary_video_stop_number": null
+    },
+    {
+      "trigger": "Break another pile of wooden crates.",
+      "location": "Further location description was not supplied with the player's coordinates.",
+      "reported_coordinate_triplet": [-1317, 541, 168],
+      "primary_video_stop_number": null
+    },
+    {
+      "trigger": "Break three rocks.",
+      "location": "Cliff south of Clouded Cliffs overlooking Memento Square.",
+      "reported_coordinate_triplet": null,
+      "primary_video_stop_number": null
+    },
+    {
+      "trigger": "Check and break the log near the shooting game.",
+      "location": "Memento Square, according to another player report.",
+      "reported_coordinate_triplet": null,
+      "primary_video_stop_number": null
+    }
+  ],
+  "sources": {
+    "primary_video": "https://www.youtube.com/watch?v=uZuuJ6MUKOc",
+    "labeled_companion_video": "https://www.youtube.com/watch?v=NF2gq5728Ak",
+    "regional_interactive_map": "https://game8.co/games/Wuthering-Waves/archives/456161",
+    "puzzle_mechanics": "https://game8.co/games/Wuthering-Waves/archives/456162",
+    "camp_raid": "https://game8.co/games/Wuthering-Waves/archives/457303",
+    "torn_page_locations": "https://game8.co/games/Wuthering-Waves/archives/457061",
+    "player_reported_hidden_chests": "https://www.reddit.com/r/WutheringWaves/comments/1d4pv0x/"
+  }
+}
