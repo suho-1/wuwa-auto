@@ -1,0 +1,469 @@
+{
+  "version": "1.0",
+  "source": "Rexlent Wuthering Waves Guide Playlist (PLT669jfZO0z9sA1RCWuQfIpufrIkI3s3f)",
+  "characters": {
+    "char_jinhsi": {
+      "display_name": "Jinhsi",
+      "element": "Spectro",
+      "weapon": "Broadblade",
+      "role": "MainDPS",
+      "tier": "S+",
+      "best_echo_set": "Celestial Light (5pc)",
+      "main_echo": "Jué",
+      "weapon_recommendation": "Ages of Harvest / Lustrous Razor",
+      "damage_profile": "Resonance Skill (Illuminous Epiphany) + Liberation",
+      "forte_mechanic": "Consumes up to 50 Incandescence stacks built by teammates' coordinated attacks and diverse element damage.",
+      "synergies": ["char_yuanwu", "char_zhezhi", "char_yinlin", "char_verina", "char_shorekeeper"]
+    },
+    "char_camellya": {
+      "display_name": "Camellya",
+      "element": "Havoc",
+      "weapon": "Sword",
+      "role": "MainDPS",
+      "tier": "S+",
+      "best_echo_set": "Sun-sinking Eclipse (5pc)",
+      "main_echo": "Nightmare: Inferno Rider / Dreamless",
+      "weapon_recommendation": "Red Spring / Emerald of Genesis",
+      "damage_profile": "Basic Attack (Vining Waltz) + Enhanced Resonance Skill",
+      "forte_mechanic": "Enters Blossom/Budding mode, consumes Forte via continuous basic attacks, executes enhanced E finisher at 10 stacks.",
+      "synergies": ["char_sanhua", "char_roccia", "char_shorekeeper", "char_verina"]
+    },
+    "char_xiangliyao": {
+      "display_name": "Xiangli Yao",
+      "element": "Electro",
+      "weapon": "Gauntlets",
+      "role": "MainDPS",
+      "tier": "S",
+      "best_echo_set": "Void Thunder (5pc)",
+      "main_echo": "Tempest Mephis",
+      "weapon_recommendation": "Verity's Handle / Abyss Surges",
+      "damage_profile": "Resonance Liberation + Enhanced Resonance Skill (Hypercubes)",
+      "forte_mechanic": "Resonance Liberation empowers skill with 3 Hypercube bursts executed via alternating E and Basic attacks.",
+      "synergies": ["char_yinlin", "chang_changli", "char_jianxin", "char_verina", "char_shorekeeper"]
+    },
+    "char_carlotta": {
+      "display_name": "Carlotta",
+      "element": "Glacio",
+      "weapon": "Pistols",
+      "role": "MainDPS",
+      "tier": "S",
+      "best_echo_set": "Freezing Frost (5pc)",
+      "main_echo": "Lumifly / Glacio 4-Cost",
+      "weapon_recommendation": "Signature Pistols / Static Mist",
+      "damage_profile": "Resonance Skill + Heavy Attack + Liberation",
+      "forte_mechanic": "Spends rifle shot crystals to charge Forte, reducing Resonance Skill CD by 6s per Forte attack, followed by Liberation nuke.",
+      "synergies": ["char_zhezhi", "char_sanhua", "char_shorekeeper", "char_verina"]
+    },
+    "chang_changli": {
+      "display_name": "Changli",
+      "element": "Fusion",
+      "weapon": "Sword",
+      "role": "SubDPS",
+      "dual_dps": true,
+      "tier": "S",
+      "best_echo_set": "Molten Rift (5pc)",
+      "main_echo": "Inferno Rider",
+      "weapon_recommendation": "Blazing Brilliance / Emerald of Genesis",
+      "outro_buff": "20% Fusion DMG Deepen + 25% Resonance Liberation Deepen for 14s",
+      "damage_profile": "True Sight Basic/Skill + Flaming Sacrifice Heavy + Liberation",
+      "synergies": ["char_encore", "char_chixia", "char_xiangliyao", "char_rover", "char_verina"]
+    },
+    "char_jiyan": {
+      "display_name": "Jiyan",
+      "element": "Aero",
+      "weapon": "Broadblade",
+      "role": "MainDPS",
+      "tier": "S",
+      "best_echo_set": "Sierra Gale (5pc)",
+      "main_echo": "Feilian Beringal",
+      "weapon_recommendation": "Verdant Summit / Lustrous Razor",
+      "damage_profile": "Heavy Attack (Qingloong Mode Lance Thrusts)",
+      "forte_mechanic": "All attacks in Qingloong mode count as Heavy Attack damage.",
+      "synergies": ["char_mortefi", "char_ciaccona", "char_verina", "char_shorekeeper"]
+    },
+    "char_rover": {
+      "display_name": "Rover (Havoc)",
+      "element": "Havoc",
+      "weapon": "Sword",
+      "role": "MainDPS",
+      "tier": "S",
+      "best_echo_set": "Sun-sinking Eclipse (5pc)",
+      "main_echo": "Dreamless",
+      "weapon_recommendation": "Emerald of Genesis / Commando of Conviction",
+      "damage_profile": "Dark Surge Heavy Attack + Resonance Liberation Nuke + Dreamless Cancel",
+      "forte_mechanic": "Full Forte triggers Dark Surge state with enhanced basic attack string and instant Dreamless cast.",
+      "synergies": ["char_danjin", "char_sanhua", "char_verina", "char_shorekeeper"]
+    },
+    "char_encore": {
+      "display_name": "Encore",
+      "element": "Fusion",
+      "weapon": "Rectifier",
+      "role": "MainDPS",
+      "tier": "S",
+      "best_echo_set": "Molten Rift (5pc)",
+      "main_echo": "Inferno Rider",
+      "weapon_recommendation": "Stringmaster / Cosmic Ripples",
+      "damage_profile": "Basic Attack + Resonance Skill + Cosmos Rave Liberation",
+      "forte_mechanic": "Consumes D mayhem gauge for heavy attack nuke; animation can be dash-cancelled.",
+      "synergies": ["chang_changli", "char_sanhua", "char_verina", "char_shorekeeper"]
+    },
+    "char_calcharo": {
+      "display_name": "Calcharo",
+      "element": "Electro",
+      "weapon": "Broadblade",
+      "role": "MainDPS",
+      "tier": "A+",
+      "best_echo_set": "Void Thunder (5pc)",
+      "main_echo": "Thundering Mephis / Tempest Mephis",
+      "weapon_recommendation": "Lustrous Razor / Autumntrace",
+      "damage_profile": "Resonance Liberation Death Messenger Heavy Attacks",
+      "forte_mechanic": "In Liberation mode, 5-hit basic attack string triggers Death Messenger heavy attack.",
+      "synergies": ["char_yinlin", "char_jianxin", "char_verina", "char_shorekeeper"]
+    },
+    "char_yinlin": {
+      "display_name": "Yinlin",
+      "element": "Electro",
+      "weapon": "Rectifier",
+      "role": "SubDPS",
+      "tier": "S",
+      "best_echo_set": "Moonlit Clouds (5pc)",
+      "main_echo": "Impermanence Heron",
+      "weapon_recommendation": "Stringmaster / Augment",
+      "outro_buff": "20% Electro DMG Deepen + 25% Resonance Liberation Deepen for 14s",
+      "synergies": ["char_xiangliyao", "char_calcharo", "char_jinhsi", "Augusta"]
+    },
+    "char_zhezhi": {
+      "display_name": "Zhezhi",
+      "element": "Glacio",
+      "weapon": "Rectifier",
+      "role": "SubDPS",
+      "tier": "S+",
+      "best_echo_set": "Moonlit Clouds (5pc)",
+      "main_echo": "Impermanence Heron",
+      "weapon_recommendation": "Rime-Draped Sprouts / Cosmic Ripples",
+      "outro_buff": "20% Glacio DMG Deepen + 25% Resonance Skill Deepen for 14s, plus 15 flat energy regen",
+      "synergies": ["char_carlotta", "char_jinhsi", "char_lingyang"]
+    },
+    "char_sanhua": {
+      "display_name": "Sanhua",
+      "element": "Glacio",
+      "weapon": "Sword",
+      "role": "SubDPS",
+      "tier": "S+",
+      "best_echo_set": "Moonlit Clouds (5pc)",
+      "main_echo": "Impermanence Heron",
+      "weapon_recommendation": "Emerald of Genesis / Commando of Conviction",
+      "outro_buff": "38% Basic Attack DMG Deepen for 14s",
+      "synergies": ["char_camellya", "char_encore", "char_rover", "char_lingyang"]
+    },
+    "char_mortefi": {
+      "display_name": "Mortefi",
+      "element": "Fusion",
+      "weapon": "Pistols",
+      "role": "SubDPS",
+      "tier": "S",
+      "best_echo_set": "Moonlit Clouds (5pc)",
+      "main_echo": "Impermanence Heron",
+      "weapon_recommendation": "Static Mist / Cadenza",
+      "outro_buff": "38% Heavy Attack DMG Deepen for 14s + Coordinated off-field fire attacks",
+      "synergies": ["char_jiyan"]
+    },
+    "char_yuanwu": {
+      "display_name": "Yuanwu",
+      "element": "Electro",
+      "weapon": "Gauntlets",
+      "role": "SubDPS",
+      "tier": "S",
+      "best_echo_set": "Rejuvenating Glow (5pc) or Moonlit Clouds (5pc)",
+      "main_echo": "Bell-Borne Geochelone",
+      "weapon_recommendation": "Originite: Type 4 (3-star healing gauntlet to trigger Rejuvenating Glow)",
+      "outro_buff": "Rapid off-field coordinated Electro attacks from Thunder Wedge",
+      "synergies": ["char_jinhsi"]
+    },
+    "char_danjin": {
+      "display_name": "Danjin",
+      "element": "Havoc",
+      "weapon": "Sword",
+      "role": "SubDPS",
+      "tier": "A+",
+      "best_echo_set": "Moonlit Clouds (5pc) or Sun-sinking Eclipse (5pc)",
+      "main_echo": "Impermanence Heron",
+      "weapon_recommendation": "Emerald of Genesis / Commando of Conviction",
+      "outro_buff": "23% Havoc DMG Deepen for 14s",
+      "synergies": ["char_rover", "char_camellya"]
+    },
+    "char_verina": {
+      "display_name": "Verina",
+      "element": "Spectro",
+      "weapon": "Rectifier",
+      "role": "Healer",
+      "tier": "S+",
+      "best_echo_set": "Rejuvenating Glow (5pc)",
+      "main_echo": "Bell-Borne Geochelone",
+      "weapon_recommendation": "Variation / Rectifier of Voyager",
+      "outro_buff": "15% All-Type DMG Deepen + 20% teamwide ATK buff for 30s",
+      "synergies": ["all"]
+    },
+    "char_shorekeeper": {
+      "display_name": "Shorekeeper",
+      "element": "Spectro",
+      "weapon": "Rectifier",
+      "role": "Healer",
+      "tier": "S+",
+      "best_echo_set": "Rejuvenating Glow (5pc)",
+      "main_echo": "Fallacy of No Return / Bell-Borne Geochelone",
+      "weapon_recommendation": "Stellar Symphony / Variation",
+      "outro_buff": "Stellarealm provides teamwide Crit Rate (up to 12.5%) + Crit DMG (up to 25%) + Energy Regen",
+      "synergies": ["all"]
+    },
+    "char_baizhi": {
+      "display_name": "Baizhi",
+      "element": "Glacio",
+      "weapon": "Rectifier",
+      "role": "Healer",
+      "tier": "A",
+      "best_echo_set": "Rejuvenating Glow (5pc)",
+      "main_echo": "Bell-Borne Geochelone",
+      "weapon_recommendation": "Variation / Rectifier of Voyager",
+      "outro_buff": "15% All-Type DMG Deepen for the next resonator for 6s + Euphonia pick-up",
+      "synergies": ["all"]
+    },
+    "char_jianxin": {
+      "display_name": "Jianxin",
+      "element": "Aero",
+      "weapon": "Gauntlets",
+      "role": "Healer",
+      "tier": "A",
+      "best_echo_set": "Moonlit Clouds (5pc) or Sierra Gale (5pc)",
+      "main_echo": "Bell-Borne Geochelone / Impermanence Heron",
+      "weapon_recommendation": "Abyss Surges / Marcato",
+      "outro_buff": "38% Resonance Liberation Deepen for 14s + teamwide shielding",
+      "synergies": ["char_xiangliyao", "char_calcharo"]
+    },
+    "char_taoqi": {
+      "display_name": "Taoqi",
+      "element": "Havoc",
+      "weapon": "Broadblade",
+      "role": "Healer",
+      "tier": "B+",
+      "best_echo_set": "Moonlit Clouds (5pc)",
+      "main_echo": "Bell-Borne Geochelone",
+      "weapon_recommendation": "Discord / Dauntless Evernight",
+      "outro_buff": "38% Resonance Skill DMG Deepen for 14s",
+      "synergies": ["char_jinhsi"]
+    },
+    "char_yangyang": {
+      "display_name": "Yangyang",
+      "element": "Aero",
+      "weapon": "Sword",
+      "role": "SubDPS",
+      "tier": "A",
+      "best_echo_set": "Moonlit Clouds (5pc)",
+      "main_echo": "Impermanence Heron",
+      "weapon_recommendation": "Emerald of Genesis / Commando of Conviction",
+      "outro_buff": "Restores 20 flat Resonance Energy to incoming resonator over 5s",
+      "synergies": ["all"]
+    },
+    "char_chixia": {
+      "display_name": "Chixia",
+      "element": "Fusion",
+      "weapon": "Pistols",
+      "role": "MainDPS",
+      "tier": "A",
+      "best_echo_set": "Molten Rift (5pc)",
+      "main_echo": "Inferno Rider",
+      "weapon_recommendation": "Static Mist / Undying Flame",
+      "damage_profile": "Resonance Skill DAKA DAKA Rapid Fire + Liberation Finisher",
+      "synergies": ["chang_changli", "char_sanhua", "char_verina"]
+    },
+    "char_youhu": {
+      "display_name": "Youhu",
+      "element": "Glacio",
+      "weapon": "Gauntlets",
+      "role": "Healer",
+      "tier": "A",
+      "best_echo_set": "Rejuvenating Glow (5pc)",
+      "main_echo": "Bell-Borne Geochelone",
+      "weapon_recommendation": "Abyss Surges / Marcato",
+      "outro_buff": "Provides coordinated healing and damage type deepen based on fortune roll",
+      "synergies": ["char_carlotta", "char_jinhsi"]
+    },
+    "Augusta": {
+      "display_name": "Augusta",
+      "element": "Electro",
+      "weapon": "Broadblade",
+      "role": "MainDPS",
+      "tier": "S+",
+      "best_echo_set": "Void Thunder (5pc)",
+      "main_echo": "Tempest Mephis",
+      "weapon_recommendation": "Signature Broadblade / Lustrous Razor",
+      "damage_profile": "Electro Drive Jump Attacks + Liberation 1/2",
+      "synergies": ["char_yinlin", "char_shorekeeper", "char_verina"]
+    },
+    "char_cartethyia": {
+      "display_name": "Cartethyia",
+      "element": "Aero",
+      "weapon": "Sword",
+      "role": "MainDPS",
+      "tier": "S",
+      "best_echo_set": "Sierra Gale (5pc)",
+      "main_echo": "Feilian Beringal",
+      "weapon_recommendation": "Signature Sword / Emerald of Genesis",
+      "damage_profile": "Aero Sword Combos + Liberation",
+      "synergies": ["char_ciaccona", "char_iuno", "char_shorekeeper", "char_verina"]
+    },
+    "char_zani": {
+      "display_name": "Zani",
+      "element": "Spectro",
+      "weapon": "Gauntlets",
+      "role": "MainDPS",
+      "tier": "S",
+      "best_echo_set": "Celestial Light (5pc)",
+      "main_echo": "Jué",
+      "weapon_recommendation": "Signature Gauntlets / Abyss Surges",
+      "damage_profile": "Spectro Phase 2/3 Liberation Burst",
+      "synergies": ["char_phoebe", "char_rover", "char_shorekeeper", "char_verina"]
+    },
+    "char_phoebe": {
+      "display_name": "Phoebe",
+      "element": "Spectro",
+      "weapon": "Rectifier",
+      "role": "SubDPS",
+      "tier": "S",
+      "best_echo_set": "Moonlit Clouds (5pc)",
+      "main_echo": "Impermanence Heron",
+      "weapon_recommendation": "Signature Rectifier / Variation",
+      "outro_buff": "Token insert coordination + Spectro damage boost",
+      "synergies": ["char_zani", "char_rover"]
+    }
+  },
+  "meta_teams": [
+    {
+      "id": "jinhsi_yuanwu_verina",
+      "name": "Jinhsi Dragon Cannon (Standard)",
+      "tier": "S+",
+      "slots": [
+        {"role": "Healer", "character": "char_verina", "fallback": ["char_shorekeeper", "char_baizhi"], "echo_set": "Rejuvenating Glow (5pc)", "main_echo": "Bell-Borne Geochelone"},
+        {"role": "SubDPS", "character": "char_yuanwu", "fallback": ["char_zhezhi", "char_yinlin"], "echo_set": "Rejuvenating Glow / Moonlit Clouds", "main_echo": "Bell-Borne Geochelone"},
+        {"role": "MainDPS", "character": "char_jinhsi", "echo_set": "Celestial Light (5pc)", "main_echo": "Jué"}
+      ],
+      "synergy_summary": "Yuanwu drops Thunder Wedge off-field electro coordinated attacks to fill Jinhsi's 50 Incandescence stacks under 2 seconds. Verina provides 15% All-Type DMG Deepen + 20% ATK. Jinhsi unleashes 50-stack Illuminous Epiphany dragon beam + Liberation nuke, quickswapping with Unison.",
+      "guide_url": "https://youtu.be/HumJ1Pi6fAI"
+    },
+    {
+      "id": "jinhsi_zhezhi_shorekeeper",
+      "name": "Jinhsi Celestial Phantasm (Premium)",
+      "tier": "S+",
+      "slots": [
+        {"role": "Healer", "character": "char_shorekeeper", "fallback": ["char_verina", "char_baizhi"], "echo_set": "Rejuvenating Glow (5pc)", "main_echo": "Fallacy of No Return"},
+        {"role": "SubDPS", "character": "char_zhezhi", "fallback": ["char_yuanwu", "char_yinlin"], "echo_set": "Moonlit Clouds (5pc)", "main_echo": "Impermanence Heron"},
+        {"role": "MainDPS", "character": "char_jinhsi", "echo_set": "Celestial Light (5pc)", "main_echo": "Jué"}
+      ],
+      "synergy_summary": "Zhezhi provides off-field Glacio coordinated attacks, 25% Resonance Skill Deepen, and 15 energy regen for Jinhsi. Shorekeeper adds up to 12.5% Crit Rate and 25% Crit DMG via Stellarealm.",
+      "guide_url": "https://youtu.be/HumJ1Pi6fAI"
+    },
+    {
+      "id": "camellya_sanhua_shorekeeper",
+      "name": "Camellya Vining Waltz Hypercarry",
+      "tier": "S+",
+      "slots": [
+        {"role": "Healer", "character": "char_shorekeeper", "fallback": ["char_verina", "char_baizhi"], "echo_set": "Rejuvenating Glow (5pc)", "main_echo": "Fallacy of No Return"},
+        {"role": "SubDPS", "character": "char_sanhua", "fallback": ["char_roccia", "char_yangyang"], "echo_set": "Moonlit Clouds (5pc)", "main_echo": "Impermanence Heron"},
+        {"role": "MainDPS", "character": "char_camellya", "echo_set": "Sun-sinking Eclipse (5pc)", "main_echo": "Nightmare: Inferno Rider"}
+      ],
+      "synergy_summary": "Sanhua passes 38% Basic Attack DMG Deepen via Outro with near-zero field time, directly multiplying Camellya's Vining Waltz normal attacks in Budding mode.",
+      "guide_url": "https://www.youtube.com/watch?v=Hoh8lySLNBA"
+    },
+    {
+      "id": "xiangliyao_yinlin_verina",
+      "name": "Xiangli Yao Quantum Singularity",
+      "tier": "S",
+      "slots": [
+        {"role": "Healer", "character": "char_verina", "fallback": ["char_shorekeeper", "char_baizhi"], "echo_set": "Rejuvenating Glow (5pc)", "main_echo": "Bell-Borne Geochelone"},
+        {"role": "SubDPS", "character": "char_yinlin", "fallback": ["chang_changli", "char_jianxin"], "echo_set": "Moonlit Clouds (5pc)", "main_echo": "Impermanence Heron"},
+        {"role": "MainDPS", "character": "char_xiangliyao", "echo_set": "Void Thunder (5pc)", "main_echo": "Tempest Mephis"}
+      ],
+      "synergy_summary": "Yinlin supplies 20% Electro DMG Deepen and 25% Resonance Liberation Deepen for Xiangli Yao's 3-Hypercube ultimate rotation.",
+      "guide_url": "https://www.youtube.com/watch?v=VYYVEEvATc4"
+    },
+    {
+      "id": "carlotta_zhezhi_shorekeeper",
+      "name": "Carlotta Glacio Cryo Snipe",
+      "tier": "S",
+      "slots": [
+        {"role": "Healer", "character": "char_shorekeeper", "fallback": ["char_verina", "char_baizhi"], "echo_set": "Rejuvenating Glow (5pc)", "main_echo": "Fallacy of No Return"},
+        {"role": "SubDPS", "character": "char_zhezhi", "fallback": ["char_sanhua", "char_yangyang"], "echo_set": "Moonlit Clouds (5pc)", "main_echo": "Impermanence Heron"},
+        {"role": "MainDPS", "character": "char_carlotta", "echo_set": "Freezing Frost (5pc)", "main_echo": "Lumifly"}
+      ],
+      "synergy_summary": "Zhezhi buffs Glacio DMG by 20% and Resonance Skill by 25%, synchronizing with Carlotta's skill cooldown reduction and rifle burst.",
+      "guide_url": "https://www.youtube.com/watch?v=JLmO_H_vQAw"
+    },
+    {
+      "id": "changli_encore_verina",
+      "name": "Changli Encore Dual-DPS Fusion",
+      "tier": "S",
+      "slots": [
+        {"role": "Healer", "character": "char_verina", "fallback": ["char_shorekeeper", "char_baizhi"], "echo_set": "Rejuvenating Glow (5pc)", "main_echo": "Bell-Borne Geochelone"},
+        {"role": "SubDPS", "character": "chang_changli", "fallback": ["char_sanhua"], "echo_set": "Molten Rift (5pc)", "main_echo": "Inferno Rider"},
+        {"role": "MainDPS", "character": "char_encore", "fallback": ["char_chixia"], "echo_set": "Molten Rift (5pc)", "main_echo": "Inferno Rider"}
+      ],
+      "synergy_summary": "Changli provides 20% Fusion DMG Deepen and 25% Resonance Liberation Deepen via Outro, boosting Encore's Cosmos Rave liberation state.",
+      "guide_url": "https://www.youtube.com/watch?v=nCfq0DXsQqQ"
+    },
+    {
+      "id": "jiyan_mortefi_verina",
+      "name": "Jiyan Qingloong Whirlwind",
+      "tier": "S",
+      "slots": [
+        {"role": "Healer", "character": "char_verina", "fallback": ["char_shorekeeper", "char_baizhi"], "echo_set": "Rejuvenating Glow (5pc)", "main_echo": "Bell-Borne Geochelone"},
+        {"role": "SubDPS", "character": "char_mortefi", "fallback": ["char_ciaccona", "char_yangyang"], "echo_set": "Moonlit Clouds (5pc)", "main_echo": "Impermanence Heron"},
+        {"role": "MainDPS", "character": "char_jiyan", "echo_set": "Sierra Gale (5pc)", "main_echo": "Feilian Beringal"}
+      ],
+      "synergy_summary": "Mortefi's Outro gives 38% Heavy Attack DMG Deepen and coordinated dragon breath attacks during Jiyan's Qingloong mode continuous heavy lance thrusts."
+    },
+    {
+      "id": "rover_danjin_verina",
+      "name": "Rover Havoc Dark Surge",
+      "tier": "S",
+      "slots": [
+        {"role": "Healer", "character": "char_verina", "fallback": ["char_shorekeeper", "char_baizhi"], "echo_set": "Rejuvenating Glow (5pc)", "main_echo": "Bell-Borne Geochelone"},
+        {"role": "SubDPS", "character": "char_danjin", "fallback": ["char_sanhua", "char_yangyang"], "echo_set": "Moonlit Clouds (5pc)", "main_echo": "Impermanence Heron"},
+        {"role": "MainDPS", "character": "char_rover", "echo_set": "Sun-sinking Eclipse (5pc)", "main_echo": "Dreamless"}
+      ],
+      "synergy_summary": "Danjin passes 23% Havoc DMG Deepen outro. Rover Havoc triggers Dark Surge, casts Liberation nuke, and cancels with instant Dreamless echo."
+    },
+    {
+      "id": "calcharo_yinlin_verina",
+      "name": "Calcharo Death Messenger Burst",
+      "tier": "A+",
+      "slots": [
+        {"role": "Healer", "character": "char_verina", "fallback": ["char_shorekeeper", "char_baizhi"], "echo_set": "Rejuvenating Glow (5pc)", "main_echo": "Bell-Borne Geochelone"},
+        {"role": "SubDPS", "character": "char_yinlin", "fallback": ["char_jianxin", "char_yangyang"], "echo_set": "Moonlit Clouds (5pc)", "main_echo": "Impermanence Heron"},
+        {"role": "MainDPS", "character": "char_calcharo", "echo_set": "Void Thunder (5pc)", "main_echo": "Thundering Mephis"}
+      ],
+      "synergy_summary": "Yinlin Electro and Liberation deepen buffs amplify Calcharo's Death Messenger heavy attack cycles during his ultimate."
+    },
+    {
+      "id": "augusta_yinlin_shorekeeper",
+      "name": "Augusta Electro Drive",
+      "tier": "S+",
+      "slots": [
+        {"role": "Healer", "character": "char_shorekeeper", "fallback": ["char_verina", "char_baizhi"], "echo_set": "Rejuvenating Glow (5pc)", "main_echo": "Fallacy of No Return"},
+        {"role": "SubDPS", "character": "char_yinlin", "fallback": ["char_jianxin"], "echo_set": "Moonlit Clouds (5pc)", "main_echo": "Impermanence Heron"},
+        {"role": "MainDPS", "character": "Augusta", "echo_set": "Void Thunder (5pc)", "main_echo": "Tempest Mephis"}
+      ],
+      "synergy_summary": "Augusta electro hypercarry supported by Yinlin electro deepen and Shorekeeper critical buffs."
+    },
+    {
+      "id": "f2p_universal_starter",
+      "name": "Universal F2P Starter Team",
+      "tier": "A",
+      "slots": [
+        {"role": "Healer", "character": "char_baizhi", "fallback": ["char_verina"], "echo_set": "Rejuvenating Glow (5pc)", "main_echo": "Bell-Borne Geochelone"},
+        {"role": "SubDPS", "character": "char_sanhua", "fallback": ["char_yangyang", "char_chixia"], "echo_set": "Moonlit Clouds (5pc)", "main_echo": "Impermanence Heron"},
+        {"role": "MainDPS", "character": "char_rover", "echo_set": "Sun-sinking Eclipse (5pc)", "main_echo": "Dreamless"}
+      ],
+      "synergy_summary": "100% free-to-play team accessible to every player. Sanhua provides 38% Basic Attack Deepen and fast concerto generation, Baizhi provides healing and 15% deepen, Rover provides burst damage."
+    }
+  ]
+}
