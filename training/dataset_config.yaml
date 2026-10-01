@@ -1,0 +1,20 @@
+# YOLO Multi-Class Dataset Configuration for Wuthering Waves (ok-ww)
+# Used for training YOLOv8 / YOLOv11 unified vision models from gameplay footage.
+
+path: ./dataset
+train: images/train
+val: images/val
+test: images/test
+
+# Multi-class detection taxonomy for ok-ww automations
+names:
+  0: echo
+  1: echo_gold
+  2: echo_purple
+  3: echo_blue_green
+  4: target_boss
+  5: target_mob
+  6: chest_supply
+  7: interact_f_prompt
+  8: beacon_tactical
+  9: lockon_reticle
