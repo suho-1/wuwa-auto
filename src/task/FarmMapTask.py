@@ -236,7 +236,7 @@ class FarmMapTask(BigMap):
                 # --- END REFACTORED BLOCK ---
 
         finally:
-            self._stop_movement(current_direction)
+            self._stop_movement(current_direction, current_adjust)
 
 
 star_color = {
