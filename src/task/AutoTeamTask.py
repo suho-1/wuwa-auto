@@ -44,16 +44,16 @@ class AutoTeamTask(WWOneTimeTask, BaseWWTask):
         self.default_config = {
             "Auto Apply Party": True,
             "Prefer Main DPS": self.PREFER_OPTIONS[0],
-            "Min Tier": "A"
+            "Min Tier": "Any"
         }
         self.config_description = {
             "Auto Apply Party": "Automatically configure team slot assignments for combat routines",
             "Prefer Main DPS": "Select a preferred Main DPS or None to pick the highest tier carry",
-            "Min Tier": "Minimum acceptable tier for recommended team (S+, S, A)"
+            "Min Tier": "Minimum acceptable team tier (T0 best .. T4 worst), or Any"
         }
         self.config_type = {
             "Prefer Main DPS": {"type": "select", "options": self.PREFER_OPTIONS},
-            "Min Tier": {"type": "select", "options": ["S+", "S", "A"]}
+            "Min Tier": {"type": "select", "options": ["Any", "T0", "T1", "T2", "T3", "T4"]}
         }
 
     def run(self):
@@ -73,6 +73,17 @@ class AutoTeamTask(WWOneTimeTask, BaseWWTask):
         if not recommendations:
             self.log_error("No valid team composition could be formed with the current roster.")
             return
+
+        min_tier = self.config.get("Min Tier", "Any")
+        if min_tier and min_tier != "Any":
+            min_score = TeamAdvisor.tier_score(min_tier)
+            filtered = [t for t in recommendations if TeamAdvisor.tier_score(t.get("tier")) >= min_score]
+            if filtered:
+                recommendations = filtered
+            else:
+                self.log_warning(
+                    f"No recommended team reaches the configured minimum tier {min_tier}, "
+                    f"using the best available instead.")
 
         best_team = recommendations[0]
         self.log_info("\n" + self.advisor.format_team_display(best_team))

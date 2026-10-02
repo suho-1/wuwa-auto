@@ -61,6 +61,8 @@ class TacetTask(WWOneTimeTask, BaseCombatTask):
         }
         self.stamina_once = 60
 
+    MAX_ALTERNATIVE_FIELDS = 3
+
     def run(self):
         super().run()
         self.ensure_main(time_out=180)
@@ -102,10 +104,18 @@ class TacetTask(WWOneTimeTask, BaseCombatTask):
             else:
                 index = 0
 
+            # Only serials that exist in the F2 list are valid targets.
+            max_index = min(self.total_number, len(TACET_SUPPRESSIONS)) - 1
+            if index < 0 or index > max_index:
+                self.log_warning(f'Tacet Suppression #{index + 1} is out of range, falling back to #1')
+                index = 0
+
             skip_locked = config.get('Skip Locked Fields', config.get('Skip Locked Areas', True))
             candidates = [index]
             if skip_locked:
-                candidates += [i for i in range(self.total_number) if i != index]
+                # Try a few alternatives only: wandering through every field would
+                # farm something completely unrelated if the lock check misfires.
+                candidates += [i for i in range(max_index + 1) if i != index][:self.MAX_ALTERNATIVE_FIELDS]
 
             teleported = False
             for cand_index in candidates:

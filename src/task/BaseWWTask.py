@@ -1172,57 +1172,80 @@ class BaseWWTask(BaseTask):
 
     @classmethod
     def get_locked_keywords(cls):
+        """Keywords that unambiguously mean "this area / beacon / challenge is locked".
+
+        These are matched against OCR output, so they must not fire on ordinary UI
+        text. In particular plain 'locked' must never match the very common word
+        'Unlocked' (hence the negative lookbehind), and vague wordings such as
+        'not available' are deliberately excluded: a false positive here makes the
+        task skip perfectly reachable bosses / nests / domains.
+        """
         return [
-            re.compile(r'locked', re.I),
-            re.compile(r'not unlocked', re.I),
-            re.compile(r'not activated', re.I),
-            re.compile(r'area locked', re.I),
-            re.compile(r'undiscovered', re.I),
-            re.compile(r'unactivated', re.I),
-            re.compile(r'cannot track', re.I),
-            re.compile(r'cannot fast travel', re.I),
-            re.compile(r'unlock.*first', re.I),
-            re.compile(r'area.*unlocked', re.I),
-            re.compile(r'unlock condition', re.I),
-            re.compile(r'unexplored', re.I),
-            re.compile(r'not available', re.I),
-            re.compile(r'inaccessible', re.I),
-            re.compile(r'reach.*to unlock', re.I),
-            re.compile(r'complete.*to unlock', re.I),
+            re.compile(r'(?<!un)\block(?:ed)?\b', re.I),
+            re.compile(r'\bnot\s+unlocked\b', re.I),
+            re.compile(r'\bnot\s+(?:yet\s+)?activated\b', re.I),
+            re.compile(r'\bunactivated\b', re.I),
+            re.compile(r'\bundiscovered\b', re.I),
+            re.compile(r'\bunexplored\b', re.I),
+            re.compile(r'\bcannot\s+track\b', re.I),
+            re.compile(r'\bcannot\s+fast\s+travel\b', re.I),
+            re.compile(r'\bunlock\b[^.]{0,30}\bfirst\b', re.I),
+            re.compile(r'\bunlock\s+condition', re.I),
+            re.compile(r'\breach\b[^.]{0,40}\bto\s+unlock\b', re.I),
+            re.compile(r'\bcomplete\b[^.]{0,40}\bto\s+unlock\b', re.I),
             '未解锁', '尚未解锁', '未开启', '未激活', '信标未激活',
             '信标尚未激活', '该区域未解锁', '该区域尚未探索', '区域未开放',
             '无法快速旅行', '暂未开启', '不可追踪', '需先解锁', '请先解锁',
-            '解锁条件', '未探索', '不可前往', '无法前往', '暂未开放', '未达成',
+            '解锁条件', '未探索', '不可前往', '无法前往', '暂未开放',
         ]
 
-    def is_area_or_beacon_locked(self):
-        locked_keywords = self.get_locked_keywords()
-        has_executor = hasattr(self, '_executor') and self._executor is not None
-        if has_executor:
-            try:
-                boxes_to_check = [
-                    self.box_of_screen(0.65, 0.50, 0.99, 0.99),
-                    self.box_of_screen(0.20, 0.20, 0.80, 0.80),
-                    self.box_of_screen(0.20, 0.10, 0.80, 0.50),
-                    self.box_of_screen(0.70, 0.85, 0.98, 0.98),
-                ]
-                for box in boxes_to_check:
-                    texts = self.ocr(box=box, match=locked_keywords)
-                    if texts:
-                        clean_name = str(getattr(texts[0], 'name', '')).encode('ascii', errors='replace').decode('ascii')
-                        logger.info(f'Detected locked area/beacon indicator: {clean_name}')
-                        return True
-            except Exception as e:
-                logger.debug(f'Targeted box check failed, trying full frame OCR: {e}')
+    def skip_locked_areas(self):
+        """Whether locked areas should be skipped (supports both config spellings)."""
+        config = getattr(self, 'config', None) or {}
+        if 'Skip Locked Areas' in config:
+            return bool(config.get('Skip Locked Areas'))
+        if 'Skip Locked Area' in config:
+            return bool(config.get('Skip Locked Area'))
+        return True
 
+    def is_area_or_beacon_locked(self, full_screen=False):
+        """Detect a 'locked / not activated' message.
+
+        Only the regions where the game shows beacon / challenge tooltips and
+        error toasts are scanned by default; scanning the whole frame picks up
+        unrelated quest and guide text and used to make every target look locked.
+        """
+        locked_keywords = self.get_locked_keywords()
         try:
-            texts = self.ocr(match=locked_keywords)
+            boxes_to_check = [
+                self.box_of_screen(0.65, 0.50, 0.99, 0.99),  # beacon / challenge detail panel
+                self.box_of_screen(0.30, 0.40, 0.70, 0.62),  # center toast
+                self.box_of_screen(0.70, 0.85, 0.98, 0.98),  # bottom right hint
+            ]
+        except Exception as e:
+            logger.debug(f'Could not build locked-check boxes, using full frame: {e}')
+            boxes_to_check = []
+            full_screen = True
+        for box in boxes_to_check:
+            try:
+                texts = self.ocr(box=box, match=locked_keywords)
+            except Exception as e:
+                logger.debug(f'Locked check OCR failed: {e}')
+                continue
             if texts:
                 clean_name = str(getattr(texts[0], 'name', '')).encode('ascii', errors='replace').decode('ascii')
-                logger.info(f'Detected locked indicator via full OCR: {clean_name}')
+                logger.info(f'Detected locked area/beacon indicator: {clean_name}')
                 return True
-        except Exception as e:
-            logger.debug(f'Full OCR check failed: {e}')
+
+        if full_screen:
+            try:
+                texts = self.ocr(match=locked_keywords)
+                if texts:
+                    clean_name = str(getattr(texts[0], 'name', '')).encode('ascii', errors='replace').decode('ascii')
+                    logger.info(f'Detected locked indicator via full OCR: {clean_name}')
+                    return True
+            except Exception as e:
+                logger.debug(f'Full OCR check failed: {e}')
         return False
 
     def wait_click_travel(self, raise_if_not_found=True, time_out=10, check_locked=True):
@@ -1244,7 +1267,7 @@ class BaseWWTask(BaseTask):
             raise AreaLockedException('Waypoint or beacon is locked / not activated on map')
 
         if raise_if_not_found:
-            skip_locked = getattr(self, 'config', {}).get('Skip Locked Areas', True) or getattr(self, 'config', {}).get('Skip Locked Area', True)
+            skip_locked = self.skip_locked_areas()
             if skip_locked:
                 logger.warning('Failed to find travel button and Skip Locked Areas is enabled; treating as locked area')
                 self.send_key('esc', after_sleep=0.5)
@@ -1329,7 +1352,7 @@ class BaseWWTask(BaseTask):
         if not btns:
             if self.is_area_or_beacon_locked():
                 raise AreaLockedException("Target challenge / boss is locked")
-            skip_locked = getattr(self, 'config', {}).get('Skip Locked Areas', True) or getattr(self, 'config', {}).get('Skip Locked Area', True)
+            skip_locked = self.skip_locked_areas()
             if skip_locked:
                 raise AreaLockedException("Could not find boss_proceed button (target likely locked)")
             raise Exception("can't find boss_proceed")
@@ -1349,7 +1372,7 @@ class BaseWWTask(BaseTask):
                 if not btns:
                     if self.is_area_or_beacon_locked():
                         raise AreaLockedException("Target challenge / boss is locked")
-                    skip_locked = getattr(self, 'config', {}).get('Skip Locked Areas', True) or getattr(self, 'config', {}).get('Skip Locked Area', True)
+                    skip_locked = self.skip_locked_areas()
                     if skip_locked:
                         raise AreaLockedException("Could not find boss_proceed button after scroll (target likely locked)")
                     raise Exception("can't find boss_proceed after scroll")
@@ -1361,7 +1384,7 @@ class BaseWWTask(BaseTask):
         feature = self.wait_feature(['fast_travel_custom', 'gray_teleport', 'remove_custom', 'team_close'], time_out=10,
                                     settle_time=0.5, raise_if_not_found=False)
         if not feature:
-            if self.is_area_or_beacon_locked() or getattr(self, 'config', {}).get('Skip Locked Areas', True) or getattr(self, 'config', {}).get('Skip Locked Area', True):
+            if self.is_area_or_beacon_locked() or self.skip_locked_areas():
                 raise AreaLockedException("Target beacon cannot be traveled to (likely locked)")
             raise Exception("can't find travel or team_close button")
         return feature.name == 'team_close'

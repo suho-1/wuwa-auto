@@ -347,6 +347,61 @@ class LockedAreaTests(unittest.TestCase):
         warning_calls = [str(call) for call in task.log_warning.call_args_list]
         self.assertTrue(any('locked area' in w for w in warning_calls))
 
+    def test_unlocked_text_is_not_treated_as_locked(self):
+        """'Unlocked', 'Area Unlocked', ... must never trigger lock detection."""
+        task = BaseWWTask.__new__(BaseWWTask)
+        task.config = {'Skip Locked Areas': True}
+        keywords = task.get_locked_keywords()
+
+        def matches(text):
+            for kw in keywords:
+                if isinstance(kw, str):
+                    if kw in text:
+                        return True
+                elif kw.search(text):
+                    return True
+            return False
+
+        for benign in ['Unlocked', 'Area Unlocked', 'New Area Unlocked!',
+                       'Resonator Unlocked', 'Available', 'Not available yet',
+                       'Rewards unlocked at level 20']:
+            self.assertFalse(matches(benign), f'false positive on {benign!r}')
+
+        for locked in ['Locked', 'This beacon is locked', 'Area not unlocked',
+                       'Beacon not activated', 'Unexplored region',
+                       'Cannot fast travel', '\u4fe1\u6807\u672a\u6fc0\u6d3b']:
+            self.assertTrue(matches(locked), f'missed lock text {locked!r}')
+
+    def test_skip_locked_areas_respects_disabled_config(self):
+        task = BaseWWTask.__new__(BaseWWTask)
+        task.config = {'Skip Locked Areas': False}
+        self.assertFalse(task.skip_locked_areas())
+        task.config = {}
+        self.assertTrue(task.skip_locked_areas())
+
+    def test_nest_counter_filter_only_matches_real_nests(self):
+        task = NightmareNestTask.__new__(NightmareNestTask)
+        self.assertTrue(task._is_incomplete_nest('0', '24'))
+        self.assertTrue(task._is_incomplete_nest('12', '48'))
+        self.assertFalse(task._is_incomplete_nest('24', '24'))
+        # Unrelated guidebook counters (boss / quest rows) must be ignored
+        self.assertFalse(task._is_incomplete_nest('0', '10'))
+        self.assertFalse(task._is_incomplete_nest('3', '5'))
+        self.assertFalse(task._is_incomplete_nest('x', '24'))
+
+    def test_nest_attempts_are_capped(self):
+        task = NightmareNestTask.__new__(NightmareNestTask)
+        task._nest_attempts = {}
+        task._unreachable_nests = set()
+        task._unreachable_targets = []
+        task.log_info = MagicMock()
+        nest = NestTarget(box=None, cache_key='go_nest:24:10', action='go_nest',
+                          denominator=24, row_y=0.2)
+        for _ in range(task.MAX_ATTEMPTS_PER_NEST):
+            self.assertTrue(task._register_attempt(nest))
+        self.assertFalse(task._register_attempt(nest))
+        self.assertIn('go_nest:24:10', task._unreachable_nests)
+
 
 if __name__ == '__main__':
     unittest.main()

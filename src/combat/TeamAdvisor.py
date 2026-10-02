@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from typing import List, Optional, Set
 
 
@@ -89,6 +90,37 @@ class TeamAdvisor:
         "rover (aero)": "char_rover", "rover (electro)": "char_rover",
         "char_rover_male": "char_rover",
     }
+
+    # Tier -> score. Prydwen/Rexlent data uses T0 (best) .. T4 (worst), older
+    # revisions of the database used letter tiers, so both are supported.
+    TIER_SCORES = {
+        "T0": 100, "T0.5": 95, "T1": 90, "T1.5": 85, "T2": 80, "T3": 70, "T4": 60,
+        "S+": 100, "S": 90, "A+": 80, "A": 70, "B+": 60, "B": 50,
+    }
+    DEFAULT_TIER_SCORE = 65
+
+    @classmethod
+    def tier_score(cls, tier) -> int:
+        """Numeric weight of a tier label, tolerant of unknown/unrated labels."""
+        if tier is None:
+            return cls.DEFAULT_TIER_SCORE
+        key = str(tier).strip()
+        if key in cls.TIER_SCORES:
+            return cls.TIER_SCORES[key]
+        upper = key.upper()
+        if upper in cls.TIER_SCORES:
+            return cls.TIER_SCORES[upper]
+        # e.g. "T1 (3.7)" or "Unrated (3.7, unreleased)"
+        match = re.match(r'^T\s*(\d+(?:\.\d+)?)', upper)
+        if match:
+            normalized = f"T{match.group(1)}"
+            if normalized in cls.TIER_SCORES:
+                return cls.TIER_SCORES[normalized]
+            try:
+                return max(40, 100 - int(float(match.group(1)) * 10))
+            except ValueError:
+                return cls.DEFAULT_TIER_SCORE
+        return cls.DEFAULT_TIER_SCORE
 
     def __init__(self, data_path: Optional[str] = None):
         self.data_path = data_path or self.DEFAULT_CONFIG_PATH
@@ -186,8 +218,7 @@ class TeamAdvisor:
                 continue
 
             # Calculate base score from tier
-            tier_weights = {"S+": 100, "S": 90, "A+": 80, "A": 70, "B+": 60, "B": 50}
-            base_score = tier_weights.get(meta.get("tier", "A"), 70)
+            base_score = self.tier_score(meta.get("tier"))
             final_score = base_score - sub_penalty - healer_penalty
 
             healer_info = self.get_character(chosen_healer) or {}
@@ -257,16 +288,19 @@ class TeamAdvisor:
             sub_dps_list = [c for c in available_chars if c not in healer_list and c not in main_dps_list]
         if not main_dps_list:
             main_dps_list = [c for c in available_chars if c not in healer_list]
+        if not healer_list:
+            # No dedicated healer/support in the roster: fall back to any character
+            # that is not needed as the Main DPS so a 3-slot team can still be built.
+            healer_list = [c for c in available_chars if c not in main_dps_list] or available_chars
 
-        if not (main_dps_list and healer_list):
+        if not main_dps_list:
             return None
 
         # Pick Main DPS
         if prefer_dps and prefer_dps in self.characters and prefer_dps in unlocked:
             dps_char = self.characters[prefer_dps]
         else:
-            tier_rank = {"S+": 4, "S": 3, "A+": 2, "A": 1, "B": 0}
-            main_dps_list.sort(key=lambda c: tier_rank.get(c.get("tier", "A"), 0), reverse=True)
+            main_dps_list.sort(key=lambda c: self.tier_score(c.get("tier")), reverse=True)
             dps_char = main_dps_list[0]
 
         # Pick Healer (Verina > Shorekeeper > Baizhi)

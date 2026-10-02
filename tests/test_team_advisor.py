@@ -22,16 +22,17 @@ class RexlentTeamAdvisorTests(unittest.TestCase):
         self.assertEqual(self.advisor.normalize_name("Labels.char_jinhsi"), "char_jinhsi")
         self.assertEqual(self.advisor.normalize_name("Camellya"), "char_camellya")
         self.assertEqual(self.advisor.normalize_name("shorekeeper"), "char_shorekeeper")
-        self.assertEqual(self.advisor.normalize_name("Changli"), "chang_changli")
+        self.assertEqual(self.advisor.normalize_name("Changli"), "char_changli")
         self.assertEqual(self.advisor.normalize_name("Xiangli Yao"), "char_xiangliyao")
 
     def test_jinhsi_standard_team_selected(self):
         roster = ["char_jinhsi", "char_yuanwu", "char_verina", "char_rover"]
-        recommendations = self.advisor.recommend_teams(roster)
+        recommendations = self.advisor.recommend_teams(roster, prefer_main_dps="Jinhsi")
         self.assertGreater(len(recommendations), 0)
         best = recommendations[0]
         self.assertIn("Jinhsi", best["name"])
-        self.assertEqual(best["tier"], "S+")
+        # Tier labels follow the Prydwen/Rexlent database (T0 best .. T4 worst)
+        self.assertEqual(best["tier"], "T3")
 
         # Slot 1 must be Healer, Slot 2 SubDPS, Slot 3 MainDPS
         slots = best["slots"]
@@ -111,6 +112,24 @@ class RexlentTeamAdvisorTests(unittest.TestCase):
         best = recommendations[0]
         self.assertEqual(len(best["slots"]), 3)
 
+    def test_tier_scores_support_prydwen_t_tiers(self):
+        self.assertGreater(TeamAdvisor.tier_score("T0"), TeamAdvisor.tier_score("T1"))
+        self.assertGreater(TeamAdvisor.tier_score("T1"), TeamAdvisor.tier_score("T3"))
+        self.assertGreater(TeamAdvisor.tier_score("T0"), TeamAdvisor.tier_score("T0.5"))
+        self.assertEqual(TeamAdvisor.tier_score("S+"), TeamAdvisor.tier_score("T0"))
+        # Unknown / unrated labels must not crash and must not outrank real tiers
+        self.assertLess(TeamAdvisor.tier_score("Unrated (3.7, unreleased)"),
+                        TeamAdvisor.tier_score("T1"))
+
+    def test_best_team_follows_tier_order(self):
+        roster = ["char_jinhsi", "char_yuanwu", "char_verina", "char_rover", "char_danjin"]
+        recommendations = self.advisor.recommend_teams(roster)
+        scores = [t["score"] for t in recommendations]
+        self.assertEqual(scores, sorted(scores, reverse=True))
+        # T1 Rover team must outrank the T3 Jinhsi team
+        self.assertGreater(TeamAdvisor.tier_score(recommendations[0]["tier"]),
+                           TeamAdvisor.tier_score("T3"))
+
     def test_formatted_display_output(self):
         roster = ["char_jinhsi", "char_yuanwu", "char_verina"]
         team = self.advisor.recommend_teams(roster)[0]
@@ -145,7 +164,7 @@ class AutoTeamTaskTests(unittest.TestCase):
 
     def test_task_run_produces_valid_team(self):
         task = AutoTeamTask()
-        task.config = {"Auto Apply Party": False, "Prefer Main DPS": "None", "Min Tier": "A"}
+        task.config = {"Auto Apply Party": False, "Prefer Main DPS": "Jinhsi", "Min Tier": "Any"}
         # Provide a known roster with Jinhsi and Yuanwu
         task.discovered_roster = {"char_jinhsi", "char_yuanwu", "char_verina"}
         team = task.run()

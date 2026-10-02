@@ -19,6 +19,8 @@ FORGERY_CHALLENGES = [
 
 class ForgeryTask(DomainTask):
 
+    MAX_ALTERNATIVE_CHALLENGES = 3
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = '⚒️ Forgery Challenge'
@@ -72,10 +74,16 @@ class ForgeryTask(DomainTask):
         else:
             serial = 1
 
+        if serial < 1 or serial > len(FORGERY_CHALLENGES):
+            self.log_warning(f'Forgery Challenge #{serial} is out of range, falling back to #1')
+            serial = 1
+
         skip_locked = config.get('Skip Locked Challenges', config.get('Skip Locked Areas', True))
         candidates = [serial]
         if skip_locked:
-            candidates += [i for i in range(1, len(FORGERY_CHALLENGES) + 1) if i != serial]
+            # Try a few alternatives only, see TacetTask.MAX_ALTERNATIVE_FIELDS.
+            candidates += [i for i in range(1, len(FORGERY_CHALLENGES) + 1)
+                           if i != serial][:self.MAX_ALTERNATIVE_CHALLENGES]
 
         teleported = False
         for cand_serial in candidates:

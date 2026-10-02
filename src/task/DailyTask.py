@@ -312,8 +312,22 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
         ]
         for rel_x, rel_y in milestones:
             self.click(rel_x, rel_y, after_sleep=0.6)
+            # Each claimed chest opens a reward overlay; it has to be dismissed,
+            # otherwise the following clicks land on the overlay instead of the
+            # next milestone chest and no further reward is claimed.
+            self.dismiss_reward_popup()
         self.sleep(1.0)
         self.ensure_main(time_out=10)
+
+    def dismiss_reward_popup(self):
+        """Close a reward / claim popup if one is open. Returns True if closed."""
+        if self.handle_claim_button():
+            return True
+        if self.find_one('confirm_btn_hcenter_vcenter', threshold=0.7) or self.find_one(
+                'confirm_btn_highlight_hcenter_vcenter', threshold=0.7):
+            self.send_key('esc', after_sleep=0.5)
+            return True
+        return False
 
     def claim_mail(self):
         self.info_set('current task', 'claim mail')

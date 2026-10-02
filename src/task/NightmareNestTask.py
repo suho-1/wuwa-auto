@@ -2,7 +2,7 @@ import re
 import cv2
 from dataclasses import dataclass
 
-from ok import Logger
+from ok import Logger, TaskDisabledException
 from src.task.BaseCombatTask import BaseCombatTask, CharRevivedException, CharDeadException
 from src.task.BaseWWTask import BaseWWTask
 from src.task.WWOneTimeTask import WWOneTimeTask
@@ -39,6 +39,7 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
         self._capture_mode = False
         self._unreachable_nests = set()
         self._unreachable_targets = []
+        self._nest_attempts = {}
         self._nest_tab_of_current_nest = 'go_nest'
         self.default_config.update({
             'Which to Farm': ['Nightmare Purification', 'Tacet Discord Nest'],
@@ -62,7 +63,7 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
         self._unreachable_nests.add(cache_key)
         if not hasattr(self, '_unreachable_targets'):
             self._unreachable_targets = []
-        if isinstance(nest, NestTarget) and getattr(nest, 'action', None) and getattr(nest, 'row_y', None):
+        if isinstance(nest, NestTarget) and getattr(nest, 'action', None) and getattr(nest, 'row_y', None) is not None:
             self._unreachable_targets.append({
                 'action': nest.action,
                 'denominator': nest.denominator,
@@ -71,6 +72,22 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
             })
         reason_msg = f" ({reason})" if reason else ""
         self.log_info(f"Marked nightmare nest as unreachable/locked, will skip: {cache_key}{reason_msg}")
+
+    MAX_ATTEMPTS_PER_NEST = 3
+
+    def _register_attempt(self, nest):
+        """Count attempts per nest and give up after MAX_ATTEMPTS_PER_NEST.
+
+        Without this, a nest whose counter never increases (for example when the
+        echo cannot be picked up) would be selected again and again forever.
+        """
+        cache_key = getattr(nest, 'cache_key', str(nest))
+        attempts = self._nest_attempts.get(cache_key, 0) + 1
+        self._nest_attempts[cache_key] = attempts
+        if attempts > self.MAX_ATTEMPTS_PER_NEST:
+            self._mark_nest_unreachable(nest, reason=f'no progress after {attempts - 1} attempts')
+            return False
+        return True
 
     def _is_nest_unreachable(self, action_name, denominator, row_y, cache_key):
         unreachable_set = getattr(self, '_unreachable_nests', set())
@@ -133,13 +150,18 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
         self._capture_success = False
         self._unreachable_nests.clear()
         self._unreachable_targets.clear()
+        self._nest_attempts = {}
         WWOneTimeTask.run(self)
         self.ensure_main(time_out=30)
         self._init_queue()
         self.log_info('opened gray_book_boss')
         while nest := self.get_nest_to_go():
+            if not self._register_attempt(nest):
+                continue
             try:
                 self.combat_nest(nest)
+            except TaskDisabledException:
+                raise
             except Exception as e:
                 self.log_warning(f"Error processing nest {getattr(nest, 'cache_key', nest)}: {e}. Skipping and recovering...")
                 self._mark_nest_unreachable(nest, reason=f'unexpected error: {e}')
@@ -151,13 +173,18 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
         self._capture_success = False
         self._unreachable_nests.clear()
         self._unreachable_targets.clear()
+        self._nest_attempts = {}
         WWOneTimeTask.run(self)
         self.ensure_main(time_out=30)
         self._init_queue()
         self.log_info('opened gray_book_boss')
         while nest := self.get_nest_to_go():
+            if not self._register_attempt(nest):
+                continue
             try:
                 self.combat_nest(nest)
+            except TaskDisabledException:
+                raise
             except Exception as e:
                 self.log_warning(f"Error processing nest {getattr(nest, 'cache_key', nest)}: {e}. Skipping and recovering...")
                 self._mark_nest_unreachable(nest, reason=f'unexpected error: {e}')
@@ -183,12 +210,6 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
     def combat_nest(self, nest):
         target_box = nest.box if isinstance(nest, NestTarget) else nest
         self.click(target_box, after_sleep=2)
-
-        if self._should_skip_locked() and self.is_area_or_beacon_locked():
-            self.log_warning(f"Echo nest '{getattr(nest, 'cache_key', nest)}' detected as locked after click. Skipping...")
-            self._mark_nest_unreachable(nest, reason='locked on click')
-            self._recover_to_guidebook()
-            return
 
         feature = self.wait_feature(['fast_travel_custom', 'gray_teleport', 'remove_custom', 'team_close'], time_out=6,
                                     settle_time=0.5, raise_if_not_found=False)
@@ -258,7 +279,7 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
                 else:
                     dropped = True
                     self.log_info('farm echo walk find true')
-                self._capture_success = dropped
+                self._capture_success = self._capture_success or dropped
             if not self._should_continue_combat_after_pickup():
                 break
             self.log_info('nightmare nest: combat detected after pickup')
@@ -349,15 +370,21 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
         self.click(3737 / 3840, 0.54, after_sleep=1)
         self.log_info('go nest scroll')
 
+    # Echo counters of Tacet Discord Nests / Nightmare Purification entries.
+    # Restricted on purpose: any other "x/y" counter in the guidebook (boss
+    # challenges, weekly quests, ...) must not be treated as a nest, otherwise
+    # the task clicks unrelated rows.
+    NEST_DENOMINATORS = (24, 36, 41, 48)
+
     def _is_incomplete_nest(self, numerator_str, denominator_str):
         try:
             num = int(numerator_str)
             denom = int(denominator_str)
-            if num >= denom:
-                return False
-            return denom in (24, 36, 48, 41) or (10 <= denom <= 100)
-        except ValueError:
+        except (TypeError, ValueError):
             return False
+        if num >= denom:
+            return False
+        return denom in self.NEST_DENOMINATORS
 
     def find_nest(self):
         counts = self.ocr(0.35, 0.13, 1, 0.96, match=self.count_re)
