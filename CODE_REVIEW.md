@@ -112,3 +112,56 @@ pytest tests/test_game_display.py tests/test_tui.py \
 # 149 passed, 978 subtests passed — identical to pre-change baseline
 ```
 (The remaining test modules require Windows `pywin32`/`openvino` and cannot run in this sandbox.)
+
+---
+
+## 4. Second pass — broken task behaviour (Daily / Nightmare Nest / Tacet / Forgery / Team Advisor)
+
+### 4.1 `BaseWWTask.get_locked_keywords` — "Unlocked" matched the `locked` keyword (critical)
+The lock keyword list contained bare substring patterns (`locked`, `area.*unlocked`,
+`not available`, …). `re.compile('locked', re.I)` matches inside **"Unlocked"**, which the game
+shows constantly ("Area Unlocked", "Resonator Unlocked"). Combined with
+`is_area_or_beacon_locked()` doing a **full-frame OCR**, almost any screen could be reported as
+"locked", so Nightmare Nest skipped every nest and Tacet/Forgery/Daily bailed out or wandered to
+an unrelated domain.
+**Fix:** precise, anchored patterns (`(?<!un)\block(?:ed)?\b`, `\bnot\s+unlocked\b`, …), dropped
+the vague ones, and `is_area_or_beacon_locked()` now scans only the tooltip/toast regions
+(full-frame OCR is opt-in via `full_screen=True`).
+
+### 4.2 `Skip Locked Areas = False` was ignored
+`config.get('Skip Locked Areas', True) or config.get('Skip Locked Area', True)` is always truthy
+when the user disables the option (the second lookup falls back to `True`). Replaced by
+`BaseWWTask.skip_locked_areas()`.
+
+### 4.3 `NightmareNestTask`
+* `_is_incomplete_nest` accepted **any** `x/y` counter with `10 <= y <= 100`, so unrelated
+  guidebook rows (bosses, quests) were clicked as if they were nests. Restricted to the real
+  nest counters (24/36/41/48).
+* The `run()` / `run_capture_mode()` loops caught bare `Exception`, swallowing
+  `TaskDisabledException` → the task could not be stopped. Now re-raised.
+* No attempt limit per nest: a nest whose counter never advances was retried forever.
+  Added `MAX_ATTEMPTS_PER_NEST = 3`.
+* `self._capture_success = dropped` reset an already successful capture back to `False`.
+* Dropped the lock probe fired immediately after clicking a row (the panel is still loading →
+  false "locked" skips); the map-level checks remain.
+
+### 4.4 `DailyTask.claim_daily` — only the first milestone chest was claimed
+The five milestone chests are clicked back-to-back, but each claim opens a reward overlay, so
+clicks 2-5 landed on the overlay. Added `dismiss_reward_popup()` between clicks.
+
+### 4.5 `TacetTask` / `ForgeryTask` — unbounded "try another domain" fallback
+On a (often false) lock detection the tasks iterated over *every* serial in the F2 list —
+19 Tacet fields / 20 Forgery entries, far beyond the 9/6 named options — farming random content.
+Serials are now range-checked and at most 3 alternatives are attempted.
+
+### 4.6 `TeamAdvisor` — tier scoring did not understand the current database
+The roster sync moved the data to Prydwen tiers (`T0` … `T4`) while the code still weighted
+`S+/S/A`, so **every** team scored the default 70 and the ranking was meaningless; dynamic team
+synthesis also returned nothing for rosters without a dedicated healer.
+**Fix:** `TeamAdvisor.tier_score()` (T-tiers + legacy letters + unknown labels), healer fallback
+in `_synthesize_team`, and `AutoTeamTask`'s dead `Min Tier` option now uses T-tiers and is
+actually applied.
+
+Tests: stale expectations in `tests/test_team_advisor.py` updated, new regression tests for the
+keyword false positives, the config flag, the nest counter filter, the attempt cap and tier
+ordering. Full Linux-runnable suite: 207 tests + 986 subtests passing.
