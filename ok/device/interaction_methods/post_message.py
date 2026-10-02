@@ -1,3 +1,5 @@
+import ctypes
+import threading
 import time
 
 import win32api
@@ -20,6 +22,48 @@ class PostMessageInteraction(BaseInteraction):
         self.mouse_pos = (0, 0)
         self.lparam = 0x1e0001
         self._dynamic_target_hwnd = 0
+        self._last_activate_time = 0.0
+        self.held_keys = set()
+        self.held_mouse_buttons = {}
+        self._lock = threading.Lock()
+        self._stopped = False
+        self._start_heartbeat()
+
+    def _start_heartbeat(self):
+        def heartbeat_loop():
+            while not getattr(self, '_stopped', False):
+                try:
+                    time.sleep(0.08)
+                    hwnd = getattr(self.hwnd_window, 'hwnd', 0)
+                    if not hwnd or not win32gui.IsWindow(hwnd):
+                        continue
+                    is_bg = hasattr(self.hwnd_window, 'is_foreground') and not self.hwnd_window.is_foreground()
+                    if is_bg:
+                        try:
+                            ctypes.windll.user32.ClipCursor(None)
+                        except Exception:
+                            pass
+                        with self._lock:
+                            keys_to_repeat = list(self.held_keys)
+                            mouse_to_repeat = dict(self.held_mouse_buttons)
+                        if keys_to_repeat or mouse_to_repeat:
+                            self.post(win32con.WM_SETFOCUS, 0, 0)
+                        for key in keys_to_repeat:
+                            vk_code = self.get_key_by_str(key)
+                            lparam = self.make_lparam(vk_code, is_up=False, is_repeat=True)
+                            self.post(win32con.WM_KEYDOWN, vk_code, lparam)
+                        for btn_key, coords in mouse_to_repeat.items():
+                            long_pos = self.update_mouse_pos(coords[0], coords[1], activate=False)
+                            btn_flag = win32con.MK_RBUTTON if btn_key == 'right' else (win32con.MK_MBUTTON if btn_key == 'middle' else win32con.MK_LBUTTON)
+                            self.post(win32con.WM_MOUSEMOVE, btn_flag, long_pos)
+                except Exception:
+                    pass
+
+        self._heartbeat_thread = threading.Thread(target=heartbeat_loop, daemon=True, name="PostMessageHeartbeat")
+        self._heartbeat_thread.start()
+
+    def stop(self):
+        self._stopped = True
 
     @property
     def hwnd(self):
@@ -37,19 +81,24 @@ class PostMessageInteraction(BaseInteraction):
     def send_key_down(self, key, activate=True):
         if activate:
             self.try_activate()
+        with self._lock:
+            self.held_keys.add(key)
         vk_code = self.get_key_by_str(key)
         lparam = self.make_lparam(vk_code, is_up=False)
         self.post(win32con.WM_KEYDOWN, vk_code, lparam)
 
     def send_key_up(self, key):
-        # logger.debug(f'send_key_up {key}')
+        with self._lock:
+            self.held_keys.discard(key)
         vk_code = self.get_key_by_str(key)
         lparam = self.make_lparam(vk_code, is_up=True)
         self.post(win32con.WM_KEYUP, vk_code, lparam)
 
-    def make_lparam(self, vk_code, is_up=False):
+    def make_lparam(self, vk_code, is_up=False, is_repeat=False):
         scan_code = win32api.MapVirtualKey(vk_code, 0)
         lparam = (scan_code << 16) | 1
+        if is_repeat:
+            lparam |= (1 << 30)
         if is_up:
             lparam |= (1 << 30) | (1 << 31)
         return lparam
@@ -94,7 +143,14 @@ class PostMessageInteraction(BaseInteraction):
         try:
             win32gui.PostMessage(hwnd, message, wParam, lParam)
         except Exception as e:
-            logger.error(f'PostMessage error {hwnd}: {e}')
+            err_str = str(e)
+            if 'Access is denied' in err_str or (isinstance(getattr(e, 'args', None), (tuple, list)) and e.args and e.args[0] == 5):
+                now = time.time()
+                if now - getattr(self, '_last_access_denied_log', 0) > 10:
+                    self._last_access_denied_log = now
+                    logger.error(f"PostMessage error {hwnd}: (5, 'Access is denied'). Windows UIPI blocked input because the game is running as Administrator. Please run wuwa-auto as Administrator!")
+            else:
+                logger.error(f'PostMessage error {hwnd}: {e}')
 
     def swipe(self, x1, y1, x2, y2, duration=3, settle_time=0):
         # Move the mouse to the start point (x1, y1)
@@ -123,17 +179,32 @@ class PostMessageInteraction(BaseInteraction):
         self.mouse_up()
 
     def activate(self, hwnd=None):
+        if hwnd is None:
+            hwnd = self.hwnd
         self.post(win32con.WM_ACTIVATE, win32con.WA_ACTIVE, 0, hwnd=hwnd)
+        self.post(win32con.WM_SETFOCUS, 0, 0, hwnd=hwnd)
+        self.post(win32con.WM_NCACTIVATE, 1, 0, hwnd=hwnd)
 
     def deactivate(self, hwnd=None):
+        if hwnd is None:
+            hwnd = self.hwnd
         self.post(win32con.WM_ACTIVATE, win32con.WA_INACTIVE, 0, hwnd=hwnd)
+        self.post(win32con.WM_KILLFOCUS, 0, 0, hwnd=hwnd)
+        self.post(win32con.WM_NCACTIVATE, 0, 0, hwnd=hwnd)
 
     def try_activate(self):
-        base_hwnd = self.hwnd_window.hwnd
+        if hasattr(self.hwnd_window, 'is_foreground') and self.hwnd_window.is_foreground():
+            return
+        now = time.time()
+        if now - self._last_activate_time < 1.0:
+            return
+        self._last_activate_time = now
+        base_hwnd = getattr(self.hwnd_window, 'hwnd', 0)
         current_hwnd = self.hwnd
 
-        self.activate(base_hwnd)
-        if current_hwnd != base_hwnd:
+        if base_hwnd:
+            self.activate(base_hwnd)
+        if current_hwnd and current_hwnd != base_hwnd:
             self.activate(current_hwnd)
 
     def click(self, x=-1, y=-1, move_back=False, name=None, down_time=0.01, move=True, key="left"):
@@ -144,6 +215,7 @@ class PostMessageInteraction(BaseInteraction):
         else:
             long_position = self.update_mouse_pos(x, y, activate=True)
 
+        is_bg = hasattr(self.hwnd_window, 'is_foreground') and not self.hwnd_window.is_foreground()
         if key == "left":
             btn_down = win32con.WM_LBUTTONDOWN
             btn_mk = win32con.MK_LBUTTON
@@ -157,17 +229,35 @@ class PostMessageInteraction(BaseInteraction):
             btn_mk = win32con.MK_RBUTTON
             btn_up = win32con.WM_RBUTTONUP
 
-        self.post(btn_down, btn_mk, long_position
-                  )
+        if is_bg:
+            self.post(win32con.WM_MOUSEACTIVATE, self.hwnd, win32api.MAKELONG(win32con.HTCLIENT, btn_down))
+
+        if key == "middle" and down_time < 0.05:
+            down_time = 0.05
+
+        self.post(btn_down, btn_mk, long_position)
         time.sleep(down_time)
-        self.post(btn_up, 0, long_position
-                  )
+        self.post(btn_up, 0, long_position)
+        if is_bg:
+            try:
+                ctypes.windll.user32.ClipCursor(None)
+            except Exception:
+                pass
 
     def right_click(self, x=-1, y=-1, move_back=False, name=None):
         super().right_click(x, y, name=name)
         long_position = self.update_mouse_pos(x, y)
+        is_bg = hasattr(self.hwnd_window, 'is_foreground') and not self.hwnd_window.is_foreground()
+        if is_bg:
+            self.post(win32con.WM_MOUSEACTIVATE, self.hwnd, win32api.MAKELONG(win32con.HTCLIENT, win32con.WM_RBUTTONDOWN))
         self.post(win32con.WM_RBUTTONDOWN, win32con.MK_RBUTTON, long_position)
+        time.sleep(0.02)
         self.post(win32con.WM_RBUTTONUP, 0, long_position)
+        if is_bg:
+            try:
+                ctypes.windll.user32.ClipCursor(None)
+            except Exception:
+                pass
 
     def mouse_down(self, x=-1, y=-1, name=None, key="left"):
         long_position = self.update_mouse_pos(x, y)
@@ -180,18 +270,31 @@ class PostMessageInteraction(BaseInteraction):
         else:
             action = win32con.WM_RBUTTONDOWN
             btn = win32con.MK_RBUTTON
+        with self._lock:
+            self.held_mouse_buttons[key] = (self.mouse_pos[0], self.mouse_pos[1])
+        is_bg = hasattr(self.hwnd_window, 'is_foreground') and not self.hwnd_window.is_foreground()
+        if is_bg:
+            self.post(win32con.WM_MOUSEACTIVATE, self.hwnd, win32api.MAKELONG(win32con.HTCLIENT, action))
         self.post(action, btn, long_position)
 
     def update_mouse_pos(self, x, y, activate=True):
-        self.try_activate()
+        if activate:
+            self.try_activate()
 
         base_hwnd = self.hwnd_window.top_hwnd if self.hwnd_window.top_hwnd else self.hwnd_window.hwnd
 
         if x == -1 or y == -1:
-            x, y = getattr(self, 'bg_mouse_pos', (0, 0))
+            if hasattr(self, 'bg_mouse_pos') and self.bg_mouse_pos != (0, 0):
+                x, y = self.bg_mouse_pos
+            elif self.capture and getattr(self.capture, 'width', 0) > 0 and getattr(self.capture, 'height', 0) > 0:
+                x, y = int(self.capture.width * 0.5), int(self.capture.height * 0.5)
+            else:
+                x, y = getattr(self, 'bg_mouse_pos', (0, 0))
         else:
             x, y = self.hwnd_window.get_top_window_cords(x, y)
             self.bg_mouse_pos = (x, y)
+
+        self.mouse_pos = (int(x), int(y))
 
         try:
             abs_x, abs_y = win32gui.ClientToScreen(base_hwnd, (int(x), int(y)))
@@ -236,14 +339,22 @@ class PostMessageInteraction(BaseInteraction):
             return win32api.MAKELONG(int(x), int(y))
 
     def mouse_up(self, key="left"):
+        with self._lock:
+            self.held_mouse_buttons.pop(key, None)
+        long_position = self.update_mouse_pos(-1, -1, activate=False)
         if key == "left":
             action = win32con.WM_LBUTTONUP
         elif key == "middle":
             action = win32con.WM_MBUTTONUP
         else:
             action = win32con.WM_RBUTTONUP
-        self.post(action, 0,
-                  win32api.MAKELONG(self.mouse_pos[0], self.mouse_pos[1]))
+        self.post(action, 0, long_position)
+        is_bg = hasattr(self.hwnd_window, 'is_foreground') and not self.hwnd_window.is_foreground()
+        if is_bg:
+            try:
+                ctypes.windll.user32.ClipCursor(None)
+            except Exception:
+                pass
 
     def should_capture(self):
         return True
