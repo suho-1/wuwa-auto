@@ -214,39 +214,26 @@ config = {
     },
     'links': {
         'default': {
-            'github': 'https://github.com/ok-oldking/ok-wuthering-waves',
-            'discord': 'https://discord.gg/vVyCatEBgA',
-            'download': 'https://ok-script.com/ok-ww',
-            'sponsor': 'https://patreon.com/ok_oldking',
-            'share': 'Download OK-WW from https://ok-script.com/ok-ww',
-            'faq': 'https://ok-script.com/ok-ww/'
-        },
-        'zh_CN': {
-            'github': 'https://github.com/ok-oldking/ok-wuthering-waves',
-            'discord': 'https://discord.gg/vVyCatEBgA',
-            'sponsor': 'https://afdian.com/a/ok-oldking',
-            'share': '下载okww https://ok-script.com/ok-ww',
-            'faq': 'https://ok-script.com/ok-ww',
-            'qq_group': 'https://qm.qq.com/q/SUQpIpmq4',
-            'qq_channel': 'https://pd.qq.com/s/djmm6l44y',
+            'github': 'https://github.com/suho-1/wuwa-auto',
+            'share': 'Download wuwa-auto from https://github.com/suho-1/wuwa-auto',
         },
     },
     'about': """
     <p style="color:red;">
-    <strong>本软件是免费开源的。</strong> 如果你被收费，请立即退款。请访问QQ频道或GitHub下载最新的官方版本。
+    <strong>This software is free and open-source.</strong> If you were charged, request a refund. Download the latest version from GitHub.
     </p>
     <p style="color:red;">
-        <strong>本软件仅供个人使用，用于学习Python编程、计算机视觉、UI自动化等。</strong> 请勿将其用于任何营利性或商业用途。
+        <strong>This software is for personal use only — for learning Python, computer vision, and UI automation.</strong> Do not use it for any commercial purpose.
     </p>
     <p style="color:red;">
-        <strong>使用本软件可能会导致账号被封。</strong> 请在了解风险后再使用。
+        <strong>Using this software may result in your game account being banned.</strong> Use at your own risk.
     </p>
 """,
     'screenshots_folder': "screenshots",
     'gui_title': 'wuwa-auto',  # Optional
     # 'coco_feature_folder': get_path(__file__, 'assets/coco_feature'),  # required if using feature detection
-    'log_file': 'logs/ok-ww.log',  # Optional, auto rotating every day
-    'error_log_file': 'logs/ok-ww_error.log',
+    'log_file': 'logs/wuwa-auto.log',  # Optional, auto rotating every day
+    'error_log_file': 'logs/wuwa-auto_error.log',
     'launcher_log_file': 'logs/launcher.log',
     'launcher_error_log_file': 'logs/launcher_error.log',
     'version': version,
