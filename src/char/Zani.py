@@ -5,7 +5,7 @@ from typing import Callable
 import cv2
 import numpy as np
 import math
-from src.char.BaseChar import BaseChar, CharType, SwitchPriority, forte_white_color
+from src.char.BaseChar import BaseChar, CharType, SwitchPriority
 from ok import color_range_to_bound
 
 class State(Enum):

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from ok import Logger
 from src.task.BaseCombatTask import BaseCombatTask, CharRevivedException, CharDeadException
-from src.task.BaseWWTask import AreaLockedException, BaseWWTask
+from src.task.BaseWWTask import BaseWWTask
 from src.task.WWOneTimeTask import WWOneTimeTask
 
 logger = Logger.get_logger(__name__)
@@ -257,7 +257,7 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
                                 self.log_info('farm echo walk find true after re-teleport')
                 else:
                     dropped = True
-                    self.log_info(f'farm echo walk find true')
+                    self.log_info('farm echo walk find true')
                 self._capture_success = dropped
             if not self._should_continue_combat_after_pickup():
                 break
@@ -286,7 +286,7 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
                 self.click(confirm, after_sleep=1)
 
         if self._should_skip_locked() and self.is_area_or_beacon_locked():
-            self.log_warning(f"Area or beacon locked indicator appeared after travel click. Skipping nest...")
+            self.log_warning("Area or beacon locked indicator appeared after travel click. Skipping nest...")
             self._mark_nest_unreachable(nest, reason='locked message after click')
             self._recover_to_guidebook()
             return False

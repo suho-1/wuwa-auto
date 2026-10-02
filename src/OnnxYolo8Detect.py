@@ -1,6 +1,4 @@
 import os
-import random
-import time
 from typing import Tuple
 
 try:
@@ -47,21 +45,6 @@ class OnnxYolo8Detect:  # Renamed class
         available_providers = ort.get_available_providers()
         logger.info(f"Available ONNX Runtime providers: {available_providers}")
 
-    @staticmethod
-    def _load_labels(weights_path):
-        import json
-        import os
-        base_dir = os.path.dirname(weights_path) if os.path.dirname(weights_path) else "."
-        labels_json = os.path.join(base_dir, "labels.json")
-        if os.path.exists(labels_json):
-            try:
-                with open(labels_json, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                    return {int(k): str(v) for k, v in data.items()}
-            except Exception as e:
-                logger.warning(f"Failed to load labels from {labels_json}: {e}")
-        return {0: 'echo'}
-
         # Prioritize DirectML, then CUDA, then CPU
         providers = []
         if og.use_dml and 'DmlExecutionProvider' in available_providers:
@@ -103,6 +86,20 @@ class OnnxYolo8Detect:  # Renamed class
             logger.error(f"Error initializing ONNX Runtime session: {e}")
             raise RuntimeError("Could not initialize ONNX Runtime model") from e
         # --- End ONNX Runtime Initialization ---
+
+    @staticmethod
+    def _load_labels(weights_path):
+        import json
+        base_dir = os.path.dirname(weights_path) if os.path.dirname(weights_path) else "."
+        labels_json = os.path.join(base_dir, "labels.json")
+        if os.path.exists(labels_json):
+            try:
+                with open(labels_json, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    return {int(k): str(v) for k, v in data.items()}
+            except Exception as e:
+                logger.warning(f"Failed to load labels from {labels_json}: {e}")
+        return {0: 'echo'}
 
     def letterbox(self, img: np.ndarray, new_shape: Tuple[int, int] = (640, 640)) -> Tuple[np.ndarray, Tuple[int, int]]:
         """

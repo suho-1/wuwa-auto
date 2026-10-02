@@ -2,7 +2,6 @@ import time
 
 from ok import TriggerTask, Logger
 from src.char.CharFactory import char_names
-from src.scene.WWScene import WWScene
 from src.task.BaseCombatTask import BaseCombatTask, NotInCombatException, CharDeadException
 
 logger = Logger.get_logger(__name__)
@@ -63,7 +62,7 @@ class AutoCombatTask(BaseCombatTask, TriggerTask):
                     switched_to_healer = True
                 self.get_current_char().perform()
             except CharDeadException:
-                self.log_error(f'Characters dead', notify=True)
+                self.log_error('Characters dead', notify=True)
                 break
             except NotInCombatException as e:
                 logger.info(f'auto_combat_task_out_of_combat {int(time.time() - combat_start)} {e}')

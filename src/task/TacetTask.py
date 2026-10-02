@@ -165,7 +165,7 @@ class TacetTask(WWOneTimeTask, BaseCombatTask):
                 must_use -= used
 
     def not_enough_stamina(self, back=True):
-        self.log_info(f"used all stamina")
+        self.log_info("used all stamina")
         if back:
             self.ensure_main(time_out=10)
 

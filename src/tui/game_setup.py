@@ -11,7 +11,6 @@ import os
 from . import console, game_display as gd
 from .config_menu import menu
 from .console import escape
-from .routines import ROUTINES
 
 BACK = "b"
 
@@ -163,7 +162,7 @@ def run(bridge):
         state = gd.read_state()
         running = gd.is_game_running()
         rows = [
-            ("1", f"Apply a display profile to the settings file"),
+            ("1", "Apply a display profile to the settings file"),
             ("2", "Resize the live game window now"),
             ("3", "Launch the game (choose DX11 / DX12 / default)"),
             ("4", "Show the current game display settings"),

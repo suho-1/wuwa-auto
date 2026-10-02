@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 from ok import color_range_to_bound
-from src.char.BaseChar import BaseChar, SwitchPriority, forte_white_color
+from src.char.BaseChar import BaseChar, SwitchPriority
 
 
 class Changli(BaseChar):
@@ -21,7 +21,6 @@ class Changli(BaseChar):
         return super().get_switch_priority(current_char, has_intro, target_low_con)
 
     def do_perform(self):
-        outro = False
         forte = -1
         self.check_f_on_switch = True
         if self.has_intro:

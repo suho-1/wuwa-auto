@@ -2,11 +2,10 @@ import math
 import re
 import time
 from datetime import datetime, timedelta
-from typing import List
 
 import numpy as np
 
-from ok import BaseTask, Logger, find_boxes_by_name, og, find_color_rectangles, mask_white, Box
+from ok import BaseTask, Logger, og, find_color_rectangles, Box
 from ok import CannotFindException
 import cv2
 
@@ -179,7 +178,7 @@ class BaseWWTask(BaseTask):
                 if no_echo_start == 0:
                     no_echo_start = time.time()
                 elif time.time() - no_echo_start > 3:
-                    self.log_debug(f'walk front to_echo, no echos found, break')
+                    self.log_debug('walk front to_echo, no echos found, break')
                     break
                 next_direction = 'w'
             else:
@@ -339,7 +338,6 @@ class BaseWWTask(BaseTask):
         delta_x = center_x - location_x
         delta_y = center_y - location_y
         # Determine dominant direction based on vector magnitude
-        direction = None
         if (abs(delta_x) > abs(delta_y) or (not current_direction and abs(delta_x) > 0.05 * screen_height)
                 or abs(delta_x) > 0.15 * screen_height):
             # More horizontal movement needed
@@ -368,12 +366,12 @@ class BaseWWTask(BaseTask):
     def check_for_monthly_card(self):
         if self.should_check_monthly_card():
             start = time.time()
-            logger.info(f'check_for_monthly_card start check')
+            logger.info('check_for_monthly_card start check')
             if self.in_combat():
-                logger.info(f'check_for_monthly_card in combat return')
+                logger.info('check_for_monthly_card in combat return')
                 return time.time() - start
             if self.in_team_and_world():
-                logger.info(f'check_for_monthly_card in team send sleep until monthly card popup')
+                logger.info('check_for_monthly_card in team send sleep until monthly card popup')
                 monthly_card = self.wait_until(self.handle_monthly_card, time_out=120, raise_if_not_found=False)
                 logger.info(f'wait monthly card end {monthly_card}')
                 cost = time.time() - start
@@ -451,7 +449,7 @@ class BaseWWTask(BaseTask):
         else:
             used = once
             use_double = False
-            logger.info(f"使用单倍体力")
+            logger.info("使用单倍体力")
         if use_double:
             btn = self.click_dialog_right_button()
         else:
@@ -499,7 +497,7 @@ class BaseWWTask(BaseTask):
             if raise_if_not_found:
                 raise CannotFindException('cant find the f to enter')
             else:
-                logger.warning(f"can't find the f to enter")
+                logger.warning("can't find the f to enter")
                 return False
         return f_found
 
@@ -539,7 +537,7 @@ class BaseWWTask(BaseTask):
             self.sleep(0.5)
             self.send_key('esc')
             self.sleep(0.5)
-            logger.info(f"handle_claim_button found a claim reward")
+            logger.info("handle_claim_button found a claim reward")
             return True
 
     def has_claim_stamina(self):
@@ -623,7 +621,7 @@ class BaseWWTask(BaseTask):
         self.log_info('start walk_to_treasure')
         if not self.walk_to_box(self.find_treasure_icon, end_condition=self.find_f_with_claim_text):
             if not self.walk_to_box(self.find_treasure_icon, end_condition=self.find_f_with_text):
-                raise Exception(f'can not walk to treasure!')
+                raise Exception('can not walk to treasure!')
         if send_f:
             self.walk_until_f(time_out=2, backward_time=0, raise_if_not_found=raise_if_not_found)
         self.sleep(1)
@@ -683,7 +681,7 @@ class BaseWWTask(BaseTask):
     def walk_find_echo(self, backward_time=1, time_out=3):
         if self.walk_until_f(time_out=time_out, backward_time=backward_time, target_text=self.absorb_echo_text(),
                              raise_if_not_found=False, check_combat=True):  # find and pick echo
-            logger.debug(f'farm echo found echo move forward walk_until_f to find echo')
+            logger.debug('farm echo found echo move forward walk_until_f to find echo')
             return self.pick_f()
 
     def incr_drop(self, dropped):
@@ -865,7 +863,6 @@ class BaseWWTask(BaseTask):
 
     def rotate_arrow_and_find(self):
         arrow_template = self.get_feature_by_name('arrow')
-        original_mat = arrow_template.mat
         max_conf = 0
         max_angle = 0
         max_target = None

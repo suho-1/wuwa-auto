@@ -60,7 +60,7 @@ class Cartethyia(BaseChar):
         else:
             self.click_echo(time_out=0)
         if self.is_small():
-            self.logger.info(f'is cartethyia')
+            self.logger.info('is cartethyia')
             self.wait_down()
             if self.acquire_missing_buffs():
                 return self.switch_next_char()
@@ -74,7 +74,7 @@ class Cartethyia(BaseChar):
             elif not self.is_small():
                 self.transform = True
         else:
-            self.logger.info(f'is fleurdelys')
+            self.logger.info('is fleurdelys')
         if self.click_resonance_with_lib_big():
             pass
         else:
@@ -109,7 +109,7 @@ class Cartethyia(BaseChar):
         if self.has_cd('resonance'):
             return False
         clicked = False
-        self.logger.debug(f'click_resonance start')
+        self.logger.debug('click_resonance start')
         last_click = 0
         resonance_click_time = 0
         while True:
@@ -122,7 +122,7 @@ class Cartethyia(BaseChar):
             now = time.time()
             current_resonance = self.current_resonance()
             if not self.resonance_available():
-                self.logger.debug(f'click_resonance not available break')
+                self.logger.debug('click_resonance not available break')
                 break
             self.logger.debug(f'click_resonance resonance_available click {current_resonance}')
 

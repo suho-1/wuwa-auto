@@ -1,6 +1,5 @@
 from ok import TriggerTask, Logger
 from src.Labels import Labels
-from src.scene.WWScene import WWScene
 from src.task.BaseWWTask import BaseWWTask
 
 logger = Logger.get_logger(__name__)

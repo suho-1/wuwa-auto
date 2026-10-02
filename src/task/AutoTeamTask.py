@@ -1,10 +1,7 @@
-import os
-import time
-from typing import List, Optional, Set
+from typing import Set
 
 from ok import Logger
-from src.Labels import Labels
-from src.char.CharFactory import char_dict, char_names
+from src.char.CharFactory import char_names
 from src.combat.TeamAdvisor import TeamAdvisor
 from src.task.BaseWWTask import BaseWWTask
 from src.task.WWOneTimeTask import WWOneTimeTask
