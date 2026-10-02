@@ -20,6 +20,9 @@ from src.char.Encore import Encore
 from src.char.Galbrena import Galbrena
 from src.char.Rover import Rover
 from src.char.Hiyuki import Hiyuki
+from src.char.Hsin import Hsin
+from src.char.Jingran import Jingran
+from src.char.Suoming import Suoming
 from src.char.Iuno import Iuno
 from src.char.Jianxin import Jianxin
 from src.char.Jinhsi import Jinhsi
@@ -126,6 +129,11 @@ _char_dict_raw = {
     Labels.char_xigelika: {'cls': Xigelika, 'char_type': CharType.MAIN_DPS, 'ring_index': Elements.WIND},
     Labels.char_luhesi: {'cls': Luhesi, 'char_type': CharType.MAIN_DPS, 'ring_index': Elements.SPECTRO},
     Labels.char_hiyuki: {'cls': Hiyuki, 'char_type': CharType.MAIN_DPS, 'ring_index': Elements.ICE},
+    # New characters from patch 3.6/3.7 (prydwen.gg roster). Recognition activates
+    # automatically once avatar templates are annotated for these labels.
+    Labels.char_hsin: {'cls': Hsin, 'char_type': CharType.MAIN_DPS, 'ring_index': Elements.ELECTRIC},
+    Labels.char_jingran: {'cls': Jingran, 'char_type': CharType.MAIN_DPS, 'ring_index': Elements.FIRE},
+    Labels.char_suoming: {'cls': Suoming, 'char_type': CharType.MAIN_DPS, 'ring_index': Elements.ELECTRIC},
     Labels.char_lucilla: {'cls': Lucilla, 'char_type': CharType.SUB_DPS, 'ring_index': Elements.ICE,
                           'target_box_short_combat_check': True},
     Labels.char_lucy: {'cls': Lucy, 'char_type': CharType.MAIN_DPS, 'ring_index': Elements.SPECTRO},
@@ -164,8 +172,22 @@ def _apply_char_config(task, char, info):
     return char
 
 
+def _existing_template_names(task, names):
+    """Filter template names down to those with an annotated feature.
+
+    Newly registered characters may not have avatar templates yet; scanning
+    for a missing feature raises in FeatureSet, so skip them until annotated.
+    """
+    try:
+        return [name for name in names if task.feature_exists(name)]
+    except Exception:
+        return list(names)
+
+
 def _find_registered_char(task, box, info):
-    template_names = info['template_names']
+    template_names = _existing_template_names(task, info['template_names'])
+    if not template_names:
+        return None
     if len(template_names) == 1:
         return task.find_one(template_names[0], box=box, threshold=0.6)
     return task.find_best_match_in_box(box, template_names, threshold=0.6)
@@ -190,7 +212,7 @@ def get_char_by_pos(task, box, index, old_char):
             _apply_char_config(task, old_char, info)
             return old_char
     if not char:
-        char = task.find_best_match_in_box(box, char_names, threshold=0.6)
+        char = task.find_best_match_in_box(box, _existing_template_names(task, char_names), threshold=0.6)
         if char:
             info = char_dict.get(char.name)
             name = char.name

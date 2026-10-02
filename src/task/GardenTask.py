@@ -42,7 +42,7 @@ class GardenTask(WWOneTimeTask, BaseWWTask):
                 self.info_set("current task", target.name)
                 if target.name == 'garden_get_skip':
                     self.sleep(1)
-                    self.log_info(f"click garden_get_confirm")
+                    self.log_info("click garden_get_confirm")
                     if gold := self.find_one('garden_get_gold', horizontal_variance=0.9):
                         self.click(gold, after_sleep=1)
                     elif purple := self.find_one('garden_get_purple', horizontal_variance=0.9):

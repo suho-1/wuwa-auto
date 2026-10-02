@@ -316,7 +316,7 @@ class FarmEchoTask(WWOneTimeTask, BaseCombatTask):
         self.use_liberation = self.config.get('Use Liberation')
         try:
             return self.do_run()
-        except TaskDisabledException as e:
+        except TaskDisabledException:
             pass
         except Exception as e:
             logger.error('farm 4c error, try handle monthly card', e)
@@ -1069,7 +1069,7 @@ class FarmEchoTask(WWOneTimeTask, BaseCombatTask):
                 targets.extend(boxes)
                 box = max(targets, key=lambda box: box.confidence, default=None)
             if box is None:
-                raise Exception(f"boss not found")
+                raise Exception("boss not found")
         return box
 
     def teleport_to_nearest_boss(self):
@@ -1141,22 +1141,25 @@ class FarmEchoTask(WWOneTimeTask, BaseCombatTask):
         trapezoid_scaled[:, 0, 1] = (trapezoid[:, 0, 1] * scale_y).astype(np.int32)
 
         # Define match threshold
-        best_mat = None
         best_match = None
         best_ratio = 0
+        trapezoid_area = cv2.contourArea(trapezoid_scaled)
+        if trapezoid_area <= 0:
+            raise RuntimeError('Invalid scaled trapezoid template for boss octagon search')
+        trapezoid_f32 = trapezoid_scaled.astype(np.float32)
 
         for cnt in contours:
             cnt = cv2.convexHull(cnt)
+            cnt_f32 = cnt.astype(np.float32)
             x, y, _, _ = cv2.boundingRect(cnt)
             for dx in range(-10, 11, 2):
                 for dy in range(-10, 11, 2):
-                    shifted = trapezoid_scaled + [x + dx, y + dy]
-                    area_i, mat_i = cv2.intersectConvexConvex(cnt.astype(np.float32), shifted.astype(np.float32))
-                    ratio = area_i / cv2.contourArea(trapezoid_scaled)
+                    shifted = trapezoid_f32 + np.float32([x + dx, y + dy])
+                    area_i, _ = cv2.intersectConvexConvex(cnt_f32, shifted)
+                    ratio = area_i / trapezoid_area
                     if ratio > best_ratio:
                         best_ratio = ratio
                         best_match = cnt
-                        best_mat = mat_i
 
         # Click contour center
         if best_match is None:
@@ -1181,7 +1184,7 @@ class FarmEchoTask(WWOneTimeTask, BaseCombatTask):
                 self.click(pop_up, after_sleep=1)
                 travel = self.wait_feature('gray_teleport', raise_if_not_found=True, time_out=3)
         if not travel:
-            raise RuntimeError(f'Can not find the travel button')
+            raise RuntimeError('Can not find the travel button')
         self.click_box(travel, relative_x=1.5)
         self.wait_in_team_and_world(time_out=20)
         self.sleep(2)

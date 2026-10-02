@@ -3,8 +3,8 @@ import time
 
 import win32api
 
-from ok import find_boxes_by_name, Logger, calculate_color_percentage
-from ok import find_color_rectangles, get_mask_in_color_range, is_pure_black
+from ok import Logger
+from ok import find_color_rectangles, get_mask_in_color_range
 from src import text_white_color
 from src.Labels import Labels
 from src.char.Roccia import Roccia
@@ -166,7 +166,7 @@ class CombatCheck(BaseWWTask):
             if self.combat_end_condition is not None and self.combat_end_condition():
                 return self.reset_to_false(reason='end condition reached')
             if self.target_enemy(wait=True):
-                logger.debug(f'retarget enemy succeeded')
+                logger.debug('retarget enemy succeeded')
                 return self.scene.set_in_combat()
             if self.check_health_bar():
                 logger.debug('target lost but enemy health bar still visible, staying in combat')
@@ -217,7 +217,7 @@ class CombatCheck(BaseWWTask):
         try:
             return self.do_check_in_combat(target)
         except Exception as e:
-            logger.error(f'do_check_in_combat:', e)
+            logger.error('do_check_in_combat:', e)
         finally:
             self.in_sleep_check = False
 
@@ -329,7 +329,7 @@ class CombatCheck(BaseWWTask):
                                                threshold=threshold)
             if best and self.esc_count == 0:
                 if double_check:
-                    logger.error(f'try fix bear echo')
+                    logger.error('try fix bear echo')
                     self.send_key('esc', after_sleep=2)
                     self.send_key('esc', after_sleep=1.5)
                     self.esc_count = 1
@@ -443,7 +443,7 @@ class CombatCheck(BaseWWTask):
                 mask, area = get_mask_in_color_range(cropped,
                                                      boss_red_text_color)
                 if area / mask.shape[0] * mask.shape[1] < 0.05:
-                    logger.error(f'keep_boss_text_white cant find text with the correct color')
+                    logger.error('keep_boss_text_white cant find text with the correct color')
                     return None, 0
         return cropped, mask
 

@@ -80,8 +80,8 @@ class ForgeryTask(DomainTask):
         teleported = False
         for cand_serial in candidates:
             try:
-                def teleport_once():
-                    self.teleport_into_domain(cand_serial, daily)
+                def teleport_once(serial_to_enter=cand_serial):
+                    self.teleport_into_domain(serial_to_enter, daily)
                 self.farm_domain_with_recovery_loop(must_use, teleport_once)
                 teleported = True
                 if cand_serial != serial:

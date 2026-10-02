@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Dict, List, Optional, Set, Tuple
+from typing import List, Optional, Set
 
 
 class TeamAdvisor:
@@ -16,48 +16,78 @@ class TeamAdvisor:
         "rexlent_teams.json"
     )
 
-    # Name normalization mapping to canonical keys
+    # Name normalization mapping to canonical keys.
+    # Covers repo label names, alternate skin templates, Prydwen (EN) spellings
+    # and the CN romanizations used by the recognition templates.
     ALIAS_MAP = {
-        "jinhsi": "char_jinhsi",
-        "jinshi": "char_jinhsi",
-        "char_jinhsi2": "char_jinhsi",
-        "camellya": "char_camellya",
-        "chamelia": "char_camellya",
-        "xiangliyao": "char_xiangliyao",
-        "xiangli yao": "char_xiangliyao",
-        "xiangli_yao": "char_xiangliyao",
-        "carlotta": "char_carlotta",
-        "char_carlotta2": "char_carlotta",
-        "changli": "chang_changli",
-        "char_changli": "chang_changli",
-        "char_changli2": "chang_changli",
-        "jiyan": "char_jiyan",
-        "rover": "char_rover",
-        "rover (havoc)": "char_rover",
-        "char_rover_male": "char_rover",
-        "encore": "char_encore",
-        "calcharo": "char_calcharo",
-        "yinlin": "char_yinlin",
-        "zhezhi": "char_zhezhi",
-        "sanhua": "char_sanhua",
-        "char_sanhua2": "char_sanhua",
-        "mortefi": "char_mortefi",
-        "yuanwu": "char_yuanwu",
-        "danjin": "char_danjin",
+        # Spectro
+        "jinhsi": "char_jinhsi", "jinshi": "char_jinhsi", "char_jinhsi2": "char_jinhsi",
         "verina": "char_verina",
-        "shorekeeper": "char_shorekeeper",
-        "shore keeper": "char_shorekeeper",
-        "shore_keeper": "char_shorekeeper",
-        "baizhi": "char_baizhi",
-        "jianxin": "char_jianxin",
-        "taoqi": "char_taoqi",
-        "yangyang": "char_yangyang",
+        "shorekeeper": "char_shorekeeper", "shore keeper": "char_shorekeeper",
+        "shore_keeper": "char_shorekeeper", "the shorekeeper": "char_shorekeeper",
+        "phoebe": "char_phoebe",
+        "zani": "char_zani", "char_zani2": "char_zani",
+        "lucy": "char_lucy",
+        "lynae": "char_linnai", "linnai": "char_linnai", "char_linnai2": "char_linnai",
+        "luuk herssen": "char_luhesi", "luukherssen": "char_luhesi", "luhesi": "char_luhesi",
+        # Electro
+        "yinlin": "char_yinlin",
+        "xiangliyao": "char_xiangliyao", "xiangli yao": "char_xiangliyao", "xiangli_yao": "char_xiangliyao",
+        "calcharo": "char_calcharo",
+        "yuanwu": "char_yuanwu",
+        "lumi": "char_lumi",
+        "augusta": "char_augusta",
+        "rebecca": "char_rebecca",
+        "buling": "char_douling", "douling": "char_douling",
+        "hsin": "char_hsin",
+        "suoming": "char_suoming",
+        # Fusion
+        "changli": "char_changli", "chang_changli": "char_changli", "char_changli2": "char_changli",
+        "encore": "char_encore",
+        "mortefi": "char_mortefi",
         "chixia": "char_chixia",
+        "brant": "char_brant",
+        "lupa": "char_lupa",
+        "galbrena": "char_galbrena",
+        "denia": "char_denia",
+        "aemeath": "char_aemeath",
+        "mornye": "char_moning", "moning": "char_moning", "char_moning_new": "char_moning",
+        "jingran": "char_jingran",
+        # Glacio
+        "carlotta": "char_carlotta", "char_carlotta2": "char_carlotta",
+        "zhezhi": "char_zhezhi",
+        "sanhua": "char_sanhua", "char_sanhua2": "char_sanhua",
+        "baizhi": "char_baizhi",
         "youhu": "char_youhu",
-        "augusta": "Augusta",
+        "lingyang": "char_lingyang",
+        "hiyuki": "char_hiyuki",
+        "suisui": "char_suisui",
+        "lucilla": "char_lucilla",
+        # Havoc
+        "camellya": "char_camellya", "chamelia": "char_camellya",
+        "danjin": "char_danjin",
+        "taoqi": "char_taoqi",
+        "roccia": "char_roccia",
+        "cantarella": "char_cantarella",
+        "phrolova": "char_phrolova",
+        "chisa": "char_chisa", "char_chisa2": "char_chisa",
+        "yangyang xuanling": "yangyang_sp", "yangyangxuanling": "yangyang_sp",
+        "yangyang sp": "yangyang_sp", "yangyangsp": "yangyang_sp",
+        # Aero
+        "jiyan": "char_jiyan",
+        "jianxin": "char_jianxin",
+        "yangyang": "char_yangyang",
+        "aalto": "char_aalto",
         "cartethyia": "char_cartethyia",
-        "zani": "char_zani",
-        "phoebe": "char_phoebe"
+        "ciaccona": "char_ciaccona",
+        "iuno": "char_iuno",
+        "qingxiao": "char_qingxiao",
+        "qiuyuan": "char_chouyuan", "chouyuan": "char_chouyuan",
+        "sigrika": "char_xigelika", "xigelika": "char_xigelika",
+        # Rover (all forms share one recognition identity)
+        "rover": "char_rover", "rover (havoc)": "char_rover", "rover (spectro)": "char_rover",
+        "rover (aero)": "char_rover", "rover (electro)": "char_rover",
+        "char_rover_male": "char_rover",
     }
 
     def __init__(self, data_path: Optional[str] = None):

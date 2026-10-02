@@ -132,13 +132,12 @@ class Carlotta(BaseChar):
     def click_resonance(self, post_sleep=0, has_animation=False, send_click=True, animation_min_duration=0,
                         check_cd=False, time_out=0):
         clicked = False
-        self.logger.debug(f'click_resonance start')
+        self.logger.debug('click_resonance start')
         last_click = 0
         last_op = 'click'
         resonance_click_time = 0
         animated = False
         start = time.time()
-        last = start
         while True:
             if time.time() - start > (time_out or 10):
                 self.task.in_liberation = False
@@ -149,7 +148,7 @@ class Carlotta(BaseChar):
             current_resonance = self.current_resonance()
             self.logger.debug(f'click_resonance break percent {current_resonance}')
             if self.has_cd('resonance'):
-                self.logger.debug(f'click_resonance not available break')
+                self.logger.debug('click_resonance not available break')
                 break
             self.logger.debug(f'click_resonance resonance_available click {current_resonance}')
 
@@ -245,7 +244,6 @@ class Carlotta(BaseChar):
         self.switch_next_char()
 
     def do_perform_outro(self):
-        res = True
         self.char_zhezhi.forte = 0
         self.get_forte()
         if not self.liberation_ready:
@@ -261,8 +259,8 @@ class Carlotta(BaseChar):
             self.liberation_ready = True
             self.forte = 0
         self.check_combat()
-        self._liberation_available == False
-        self._resonance_available == False
+        self._liberation_available = False
+        self._resonance_available = False
         click = False
         liber = False
         if self.liberation_ready:

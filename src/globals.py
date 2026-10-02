@@ -1,8 +1,7 @@
 import os.path
 
-import cv2
 
-from ok import Config, Logger, get_path_relative_to_exe, og
+from ok import Logger, get_path_relative_to_exe, og
 
 logger = Logger.get_logger(__name__)
 

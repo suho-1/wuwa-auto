@@ -327,7 +327,7 @@ class BaseChar:
         if switched_with_full_con:
             if self.buff_time > 0:
                 self.last_buff_time = self.last_switch_time
-            self.logger.info(f'switch_out at full con set current_con to 0')
+            self.logger.info('switch_out at full con set current_con to 0')
             self.current_con = 0
 
     def __repr__(self):
@@ -362,7 +362,7 @@ class BaseChar:
         self.task.skip_combat_check = False
 
     def alert_skill_failed(self):
-        self.task.log_error(f'Click skill failed, check if the keybinding is correct in ok-ww settings!',
+        self.task.log_error('Click skill failed, check if the keybinding is correct in ok-ww settings!',
                             notify=True)
         self.task.screenshot('click_resonance too long, breaking')
 
@@ -382,7 +382,7 @@ class BaseChar:
             tuple: ( (bool),  (float),  (bool))
         """
         clicked = False
-        self.logger.debug(f'click_resonance start')
+        self.logger.debug('click_resonance start')
         last_click = 0
         last_op = 'click'
         resonance_click_time = 0
@@ -411,7 +411,7 @@ class BaseChar:
                     the_time_out = SKILL_TIME_OUT
                     if now - resonance_click_time > 6:
                         self.task.in_liberation = False
-                        self.logger.error(f'resonance animation too long, breaking')
+                        self.logger.error('resonance animation too long, breaking')
                     if (click_f and now - animation_start >= animation_min_duration
                             and now - last_f_click >= 0.1):
                         self.task.send_key('f')
@@ -421,16 +421,16 @@ class BaseChar:
                     continue
                 elif self.task.in_liberation:
                     self.task.in_liberation = False
-                    self.logger.debug(f'click_resonance animated break')
+                    self.logger.debug('click_resonance animated break')
                     break
 
             self.check_combat()
             now = time.time()
             if not self.resonance_available() and (
                     not has_animation or now - start > animation_min_duration):
-                self.logger.debug(f'click_resonance not available break')
+                self.logger.debug('click_resonance not available break')
                 break
-            self.logger.debug(f'click_resonance resonance_available click')
+            self.logger.debug('click_resonance resonance_available click')
 
             if now - last_click > 0.1:
                 if send_click and last_op == 'resonance':
@@ -531,7 +531,7 @@ class BaseChar:
             self.logger.debug('click echo')
             return True
         if self.task.is_open_world_auto_combat() and self.ring_index == Elements.FIRE:
-            self.logger.debug(f'open world do not use motorcycle echo')
+            self.logger.debug('open world do not use motorcycle echo')
             return False
         self.logger.debug(f'click_echo start duration: {duration}')
         if self.has_cd('echo'):
@@ -607,13 +607,13 @@ class BaseChar:
         if con_less_than > 0:
             if self.get_current_con() > con_less_than:
                 return False
-        self.logger.debug(f'click_liberation start')
+        self.logger.debug('click_liberation start')
         start = time.time()
         last_click = 0
         clicked = False
         if not self.task.in_liberation:
             while self.liberation_available():  # clicked and still in team wait for animation
-                self.logger.debug(f'click_liberation liberation_available click')
+                self.logger.debug('click_liberation liberation_available click')
                 if send_click:
                     self.click(interval=0.1)
                 now = time.time()
@@ -630,10 +630,10 @@ class BaseChar:
                 if self.task.wait_until(lambda: not self.task.in_team()[0], time_out=0.4,
                                         post_action=self.click_with_interval if send_click else None):
                     self.task.in_liberation = True
-                    self.logger.debug(f'not in_team successfully casted liberation')
+                    self.logger.debug('not in_team successfully casted liberation')
                 else:
                     self.task.in_liberation = False
-                    self.logger.error(f'clicked liberation but no effect')
+                    self.logger.error('clicked liberation but no effect')
                     return False
             else:
                 start = time.time()
@@ -641,7 +641,7 @@ class BaseChar:
                     self.send_liberation_key(after_sleep=0.05)
                     if self.task.wait_until(lambda: not self.task.in_team()[0], time_out=0.1):
                         self.task.in_liberation = True
-                        self.logger.debug(f'not in_team successfully casted liberation')
+                        self.logger.debug('not in_team successfully casted liberation')
                 if not self.task.in_liberation:
                     return False
         start = time.time()
