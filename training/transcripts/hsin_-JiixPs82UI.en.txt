@@ -1,0 +1,262 @@
+# How to Hsin for Dummies - Wuthering Waves
+# Channel : Rexlent (https://www.youtube.com/@Rexlent)
+# Video   : https://www.youtube.com/watch?v=-JiixPs82UI
+# Playlist: WuWa Guides (PLT669jfZO0z9sA1RCWuQfIpufrIkI3s3f) - index 1 of 37
+# Length  : 17:07 (1027s)   Published: 2026-09-30
+#
+# Auto-generated English captions, lightly de-duplicated.
+# Chapter markers below are the author's OFFICIAL chapters from the video
+# description, so every "[[ mm:ss ]]" line is an exact timestamp anchor.
+
+[[ 00:00 | Basic Attack ]]
+
+Hey guys, Rexon here. Welcome to another Crash Course video. This time for Sin.
+So Sin is an electro DPS with unison support as well. She can switch between
+two resonance mode. So either electro flare or unison. So let's get straight
+into it. I'll talk about all her move set. Just ignore the team setup for now.
+We'll just focus on Sin. So Sin has a four hit combo in her normal form. So
+one, two, three, and four. So the normal combo this time will require tapping.
+You don't uh hold it all the way like the previous uh Mzo characters. You just
+uh tap it because holding will trigger her own uh heavy attack like this. So
+Sin has her own heavy attack that also skips to the second combo like so. So
+now you know one, two, three, and four. And then whole heavy attack. Whole
+basic attack for heavy attack. And then you can continue again. Two, three, and
+four. Now for her midair attack, she has a plunge. So jump and attack as a
+plunge. She also has an heavy attack in midair. So you can jump and hold heavy.
+Hold it all the way and then she'll consume her stamina and after a while it
+will end on on its own like this. So what you do is you jump, hold heavy and
+then when you release it will go back to her plunge like that and then you can
+skip to combo two, three and four again. So that's all for her basic attacks.
+Now, for her resonance skill, during her base form, her resonance skill is
+mostly gimmick. It's for transforming into the little fox. So, you press E, you
+turn into this fox. So, this fox uh she will continually heal her HP in the
+open world. And also, you won't get detected by enemies during this fox form,
+but if she takes damage, she will revert to her form right away. You can press
+E skill or basic attack to revert also like that. So you can uh switch anytime
+like so.
+
+[[ 01:55 | Forte ]]
+
+Now let's talk about her forte. Now her forte first bar you build it by doing
+intro and resonance skill and basic attack like that. So for the fox you get a
+bit of bar. When you intro you also get a bit of bar and then your basic attack
+will also get a bit of bar. Heavy attack also gives a bit of bar like that. So
+you just keep attacking until it's full. Once it's full, you will see on the
+bottom right that basic attack is glowing. So the same rule applies for most
+characters in Wua. Anything shiny, just press it. So now uh you press and hold
+basic attack. Once you do this, her bar will change with this uh red symbol in
+the center and then her first ultimate will be ready. So simply just press
+ultimate. So, in this form, there's a small timer at the bottom of the bar.
+These diamonds at the bottom, they will slowly run out. And during this form,
+you can press ultimate to switch between her base form and that first ultimate
+form anytime. This is mostly for gimmick users. But what we're going to do now
+is we're going to fill the bar at the bottom. So, you fill the bar by doing
+basic attack as well. Or you can press one basic attack and one E skill. one
+basic attack, one resonance skill. It's going to give like a full bonus. And
+now that the bar is full again, you see your E skill is shining. Press E skill.
+Now you only have 14 seconds for this last form. What you do is you just do
+four basic attack and you will open all the locks on the bar. See? See how all
+everything's shiny? And then hold basic attack and she will do her last enhance
+heavy. And now you can finish it off with ultimate. So, she's actually really
+simple.
+
+[[ 03:58 | Electro Rotation ]]
+
+So, this combo rotation you saw is for electro flare sin uh combo because when
+we go to unison, it's going to skip a step which I'll talk about in the next
+section. Now, to recap everything again for the electro flare combo, just refer
+to the cheat sheet on the screen. I will just immediately outro shorekeeper and
+then you can see sin's input from intro. All right. So sin in one basic attack,
+one heavy attack and then you can use your echo. Ultimate will be ready. Press
+ultimate. After this one basic attack, one E skill, one basic attack, one E
+skill. The bar will be full straight away. Enhance E. And then just uh four
+basic attack. One, two, three, four. And then whole basic attack again. And
+then finish it off with ultimate. That's it. Very simple.
+
+[[ 04:39 | Unison Rotation ]]
+
+Now I'll talk about the rotation for her unison form. So what we saw earlier is
+electro flare. I'll switch over here to unison. So unison will have a small
+change in her input rotation. But not to worry. Just look at the screen. If you
+notice what doesn't change is the intro, basic to heavy, and then ultimate.
+These will always remain the same except for unison. You just need to do one
+extra basic attack after intro. And then the main difference is that after she
+does the first ultimate, you will outro to the next unison character and then
+do their own rotation and then you intro sin back and sin will skip that whole
+old input of the one basic attack. And so I'll show it to you now. As you know,
+unison will take place instead of conerto. Meaning that as long as you have
+unison buff, you will do your outro and it will consume the unison over your
+conerto instead and then it will consume conerto next. Meaning that we can do
+intro and outro twice on the unison characters. So the sequence with the unison
+team will be something like this. I will start with shorekeeper. I will outro
+to Jiny. Jiny will do up to her dragon beam and then she will trigger her
+unison. I will outro to Sin. Sin will do up to her first ultimate and then she
+will also trigger her unison. And then we outro back to Jinsy again. Jiny will
+do up to her dragon beam and ultimate and then we will consume her conerto and
+outro one more time to Sin and Sin will finish up her last rotation and trigger
+the big ultimate and then we can finish it up with Shorekeeper's intro. So it
+will look something like this. Now we're just going to pretend that we already
+open short keepers out because these enemies are not going to survive through
+the whole rotation. So pretend outro. Now Jiny in same thing. Jiny just do her
+normal rotation. One, two, three. E skill four. All right. Dragon beam. Now
+we're going to bring Sin in. Sin in two basic heavy attack. Now while she does
+her ultimate, we're going to bring Jinsy back in again. Now Jini can do another
+round of dragon combo. One, two, three. E skill dragon beam ultimate. Now sin
+in again. Now sin. Just finish up the combo. So this is the part where you just
+spam basic attack uh four times like that and then you finish up with the big
+combo. But since they're already dead, I can uh build a gauge. But you get the
+idea. So instead of the usual one, two, three character rotation. Now it will
+be one, two, three, two, three, and then back to one again.
+
+[[ 07:38 | Skill Details ]]
+
+Now let's talk about the skills. For skill leveling priority, you want to do
+the two inherent skill first, followed by forte, ultimate, and intro. So Forte,
+ultimate and intro, these three on the right, and then followed by normal
+attack, and then lastly, resonance skill because resonance skill has very
+minimal scaling. Now, I'll briefly talk about what she does in unison and
+electro flare. So, first things first, her inherent skill. When she's in
+unison, and then when she triggers another unison character, her attack will be
+increased by 50% for 8 seconds. Likewise, if you change to electro flare and
+any resonator in a team dealing electro flare, she's going to get 50% electro
+damage bonus since it stacks up to two times. And she has another additional
+bonus. If she plays with electro rover, both sin and electro rover will also
+get a further increase of 20% electro damage bonus. So this is the effect of
+the first inherent skill. Second inherent skill, the max stacks of unison boon
+will be increased by one. So unison boon is a 3% damage increase for the
+resonators that are doing unison with each other. So if for example you do sin
+and jinsy, they will both get unison boon. And for electro flare, this is
+similar to other uh debuff characters where sin will record the stacks of the
+enemy and then she'll place it on new enemies. And also the stacks can go up to
+16. So if you have Sin and Chisa and Suiui, she's going to get 10 plus three
+and plus three. That's how you go all the way up to 16 if you want to run Chisa
+with her. Now for Forte Circuit, both of Sin's enhanced heavy attack has a 24
+second cool down where they get an enhanced uh damage increase. So her enhanced
+heavy attack will have an improved version of each other. And but this can only
+be triggered once every 24 seconds. This is the usual kind of cool down where
+they want you to fully rotate a whole team. So you don't really have to worry
+much about this. As long as you do your rotation correctly, it will just work
+as intended. Now for resonance mode unison, this is how it actually works. And
+also the reason why we skip the middle part of her rotation compared to electro
+flare. So every time sin intros, she's going to be ready for unison where after
+performing the first ultimate, she will get unison for 5 seconds. That's why
+after she does the ultimate within 5 seconds, you want to outro her to the next
+uh unison character to trigger this unison response. So, for example, Sin does
+her first ultimate, she outro to Jinsy. Jinxy does her whole rotation and then
+she outros back to Sin and then Sin will get this enhanced intro called
+Manifold Unison which will do a bit more damage and also trigger the 50% attack
+buff or 50% electro buff depending on the resonance mode that she uses in the
+inherent skill over here. You don't really have to worry about this. This will
+all happen in the background. This is just additional knowledge on why things
+are the way they are, how they actually work. So for her electro flare
+resonance mode gimmick is that the enemies will never lose their electro flare
+stacks anymore. And also whenever resonators inflict electro rage. So electro
+rage will improve the next electro flare damage. Every stack of electro rage
+will be converted to sin's own kind of electro stack called heart of thunder.
+This is similar to hiyuki and it stacks up to 100 times. And to trigger this,
+all you need to do is just do resonance skill and then she will trigger that
+electro flare damage and then you'll they will do this math over here. 35%
+times blah blah blah blah blah stack number. Another gimmick is that when you
+have at least 50 stacks of heart of thunder, it's also going to cause
+stagnation to the enemies. So there's more to this in her sequences which I'll
+talk about later, but this is pretty much how she works. for her outro skill.
+Straightforward damage and also she will give 20% all damage amp or in electro
+flare 20% electro damage amp. One extra thing to note is that after sin does
+her ultimate, she actually has coordinated attacks as well up to 21 times as
+long as resonators deal damage in the field. So this will be helpful in
+building up for example Jin's forte gauge. So just something for you to note.
+
+[[ 11:40 | Weapon ]]
+
+Now, as for weapon, since signature weapon is a step up above from all the
+other alternatives, so it's highly recommended to get this one. If you don't
+have this one, the next best option will be Froolova signature followed by
+Yinllin's string master. And then uh everything below that is considered uh
+relatively weak already. So, highly recommend getting this weapon. It gives all
+attribute damage bonus, resonance skill damage amp, and also ignore defense and
+electro flare damage getting amplified by 30% as well.
+
+[[ 12:09 | Echo ]]
+
+Now, moving to echo. Echo is also very straightforward. You are going to be
+using heart of sworn vigil echo set. Five piece echo set. For the four piece,
+you go for either crit damage or crit rate as long as your ratio is one is to
+two. For the three cost, I recommend going for one electro percent and one
+attack percentage just so that she can go between each form while having a
+balance of the buffs. Because if you know when she goes into unison, she gets
+plus 50% attack to herself. If she goes into electro flare mode, she gets plus
+50 electro percentage. So just go for one attack and one electro for three cost
+and then one cost usual go for attack percentage. And then for the sub stats
+you just go for double crit as usual followed by attack percentage followed by
+resonance skill damage bonus followed by flat attack. And for her energy regen
+I recommend getting at least 125% for a smooth rotation.
+
+[[ 12:59 | Sequences ]]
+
+Now let's briefly talk about her sequences. The highlight of each sequence. So
+S1 usual Wuwa design S1 comes with anti-interruption. She gets two stacks of
+radiance ward. Each stack will protect her from one interruption and also
+damage taken is reduced by 60%. Her intro skill damage is also increased by
+another 15%. And unison boon will also increase the multiplier of her intro
+skill by 10% up to four stacks. Another really nice bonus in S1 is that
+remember Heart of Thunder, the stack that goes up to 100 stacks based on
+electro flare stacks. So as long as you have below 50 stacks at the start of
+combat, it will be increased straight away to 50 stacks for you. So your
+resonance skill will also immediately uh perform stagnation on enemies since
+you already have 50 stacks. S2 has about a 15% increase in her damage and also
+faster rotation in open world than usual. So whenever she enters combat, all of
+her cooldowns will be reset. So you'll always do the full enhanced heavy attack
+damage. And she will also restore 100 points of her first gauge. Meaning once
+you start the battle, you can straight away do enhance heavy and do the first
+ultimate. So slightly speeding things up for her rotation. Apart from that, her
+enhanced heavy attacks damage are also increased by 60%. Now for S3 is about a
+25% increase to her output. Her big ultimate damage is increased by 70%. And
+then if she's in resonance mode unison, the crit damage of that big ultimate is
+increased by another 20% for each stack of unison boon that you have. So this
+will go up to four stacks. So that's a further 60% increase in crit damage if
+you have four stacks of unison boon. How to get four stacks of unison boon?
+That will be in S6. So we'll talk about that later. for the electro flare
+change in S3 is that whenever she does her big ultimate, enemies that have
+electro flare will be triggered uh one more instance of electro flare damage.
+Except this time, the damage multiplier will be equal to 1,500% times the
+multiplier. So, it'll be triggered like one huge damage after she uses
+ultimate. S4, straightforward, all resonators get 20% all attribute damage
+bonus. S5, also straightforward, just a death insurance. She will not uh die
+right away. she will get restored to 100% max HP and immune damage for every 10
+minutes. S6 is about 50 to 60% damage increase for her output. Basically, they
+just take 40% more resonance skill damage from sin. She also ignores 20%
+defense with her resonance skill. And this is the big change. The maximum
+stacks of the unison boon is increased by one more. And then whenever a
+resonator triggers unison response, all resonators in the team additionally
+gain one stack of boon. So they get another 3% damage increase whenever some
+another unison character triggers it. And for the changes in electro flare mode
+is that the electro flare damage now can crit. So the crit will be fixed at 80%
+and crit damage will be fixed at 230%. And that's pretty much it for her
+sequences. For the pull recommendation, I recommend S0 R1 first. So get one sin
+and one of her weapon. After that, it's up to you. You can go for one, two,
+three, and then you jump to six. Usual.
+
+[[ 16:05 | Unison Team ]]
+
+For unison team composition wise, the currently available team right now will
+be shorekeeper followed by Jinsy followed by sin. And for resonance mode, just
+don't forget to set sin to unison. Once Suoming releases, then Suoming can also
+replace Jinsy's role. So it'll be shorekeeper, Suoming followed by sin.
+
+[[ 16:23 | Electro Team ]]
+
+For electro flare team, it will be electro rover and sin. And then for sin,
+don't forget to set her resonance mode to electro flare. You can also replace
+her with Buling.
+
+[[ 16:34 | Team Rotation ]]
+
+And the cheat sheet for this team input will be on the screen. You can just
+follow it over here for Swiss comp. And for Buling, you can refer to this cheat
+sheet over here alongside electro rover as well. And that's pretty much it for
+the guide for sin. Really, really straightforward. Don't let the tool tips
+intimidate you. This is mostly because she has different forms and then they
+just have to write everything down. but it's actually way simpler than it
+really is. If this guide has been helpful to you, consider leaving a like,
+comment, and subscribe to the channel. I also have other guides over here that
+you can check it out. And I'll see you guys in the next video. Bye-bye.

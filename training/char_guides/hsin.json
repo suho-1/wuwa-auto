@@ -1,0 +1,475 @@
+{
+  "schema_version": "1.0",
+  "character": "char_hsin",
+  "display_name": "Hsin",
+  "source": {
+    "channel": "Rexlent",
+    "playlist": "WuWa Guides",
+    "playlist_id": "PLT669jfZO0z9sA1RCWuQfIpufrIkI3s3f",
+    "playlist_index": 1,
+    "video_id": "-JiixPs82UI",
+    "url": "https://www.youtube.com/watch?v=-JiixPs82UI",
+    "title": "How to Hsin for Dummies - Wuthering Waves",
+    "published": "2026-09-30",
+    "duration_seconds": 1027,
+    "transcript": "training/transcripts/hsin_-JiixPs82UI.en.txt"
+  },
+  "chapters": [
+    { "seconds": 0,    "title": "Basic Attack" },
+    { "seconds": 115,  "title": "Forte" },
+    { "seconds": 238,  "title": "Electro Rotation" },
+    { "seconds": 279,  "title": "Unison Rotation" },
+    { "seconds": 458,  "title": "Skill Details" },
+    { "seconds": 700,  "title": "Weapon" },
+    { "seconds": 729,  "title": "Echo" },
+    { "seconds": 779,  "title": "Sequences" },
+    { "seconds": 965,  "title": "Unison Team" },
+    { "seconds": 983,  "title": "Electro Team" },
+    { "seconds": 994,  "title": "Team Rotation" }
+  ],
+
+  "profile": {
+    "element": "Electro",
+    "weapon": "Rectifier",
+    "rarity": 5,
+    "role": "MainDPS",
+    "core_scaling": "Resonance Skill DMG",
+    "energy_regen_target": 125,
+    "skill_priority": [
+      "Inherent Skill 1",
+      "Inherent Skill 2",
+      "Forte Circuit",
+      "Resonance Liberation",
+      "Intro Skill",
+      "Basic Attack",
+      "Resonance Skill"
+    ],
+    "skill_priority_note": "Resonance Skill is levelled last: very minimal scaling."
+  },
+
+  "resonance_modes": {
+    "note": "Player-selected in game. Changes the rotation, so the bot needs to be told which one is set.",
+    "electro_flare": {
+      "id": "electro_flare",
+      "inherent_1": "Any resonator applying Electro Flare grants Hsin +50% Electro DMG bonus, stacks x2. With Electro Rover, both gain a further +20% Electro DMG bonus.",
+      "gimmick": "Enemies never lose Electro Flare stacks. Electro Rage stacks convert into 'Heart of Thunder' (max 100). Resonance Skill triggers the Electro Flare damage. At >=50 Heart of Thunder stacks it also inflicts Stagnation.",
+      "max_flare_stacks": 16,
+      "max_flare_stacks_note": "Base 10, +3 with Chisa, +3 with Suisui."
+    },
+    "unison": {
+      "id": "unison",
+      "inherent_1": "When she triggers another Unison character, +50% ATK for 8s.",
+      "unison_window_seconds": 5,
+      "mechanic": "Every Hsin intro primes Unison. After the FIRST Liberation she gains Unison for 5s; outro within that window to the next Unison character to fire the Unison Response. Coming back in she gets the enhanced intro 'Manifold Unison'.",
+      "unison_boon": "3% DMG increase per stack for resonators in Unison with each other. Inherent Skill 2 raises max stacks by 1; S6 raises it by another 1.",
+      "outro_replacement": "Unison is consumed by the outro INSTEAD of Concerto, so Unison characters can intro/outro twice per cycle."
+    }
+  },
+
+  "moves": [
+    {
+      "id": "basic_combo",
+      "name": "Basic Attack combo",
+      "input": "tap LMB x4",
+      "notes": "4-hit combo. Must be TAPPED, not held - holding triggers the heavy attack instead.",
+      "builds_forte": true
+    },
+    {
+      "id": "heavy_attack",
+      "name": "Heavy Attack",
+      "input": "hold LMB",
+      "notes": "Her own heavy attack; it also skips the combo forward to hit 2, so you can continue 2-3-4 afterwards.",
+      "builds_forte": true
+    },
+    {
+      "id": "plunge",
+      "name": "Midair plunge",
+      "input": "jump + LMB"
+    },
+    {
+      "id": "midair_heavy",
+      "name": "Midair Heavy (channel)",
+      "input": "jump + hold LMB",
+      "notes": "Channels and drains stamina, ends on its own. Releasing drops into the plunge, which then chains into combo 2-3-4."
+    },
+    {
+      "id": "resonance_skill_fox",
+      "name": "Resonance Skill - fox form",
+      "input": "E",
+      "notes": "Base form E is mostly a gimmick: turns into the little fox. Heals HP in the open world and avoids enemy detection; taking damage reverts instantly. Press E or basic attack to revert.",
+      "builds_forte": true,
+      "combat_value": "low"
+    },
+    {
+      "id": "enhanced_heavy_1",
+      "name": "Enhanced Heavy #1 (Formshift)",
+      "input": "hold LMB when the basic-attack icon glows",
+      "trigger": "First forte bar full",
+      "detector": "mouse_forte",
+      "notes": "After this the gauge shows a red symbol in the centre and the FIRST Liberation becomes available."
+    },
+    {
+      "id": "liberation_1",
+      "name": "First Liberation",
+      "input": "R",
+      "notes": "Entering this form starts a diamond timer under the gauge. Pressing Liberation again toggles between base form and this form (gimmick)."
+    },
+    {
+      "id": "enhanced_e",
+      "name": "Enhanced Resonance Skill",
+      "input": "E when the E icon shines",
+      "trigger": "Second (bottom) bar full",
+      "detector": "e_forte",
+      "notes": "Fill the bottom bar with basic attacks, or alternate 1 basic + 1 E which fills it much faster. Opens the final 14 second window."
+    },
+    {
+      "id": "final_window",
+      "name": "Final form window",
+      "duration_seconds": 14,
+      "notes": "4 basic attacks unlock every lock on the gauge (everything turns shiny), then hold basic attack for the last enhanced heavy, then finish with Liberation."
+    },
+    {
+      "id": "enhanced_heavy_2",
+      "name": "Enhanced Heavy #2 (finisher)",
+      "input": "hold LMB after the 4 unlock hits",
+      "detector": "mouse_forte"
+    },
+    {
+      "id": "liberation_2",
+      "name": "Big Liberation (finisher)",
+      "input": "R",
+      "notes": "After her Liberation she keeps coordinated attacks for up to 21 instances while teammates deal damage on field - useful to charge e.g. Jinhsi's forte."
+    }
+  ],
+
+  "forte_circuit": {
+    "enhanced_heavy_bonus_cooldown_seconds": 24,
+    "notes": "Both enhanced heavy attacks share a 24s cooldown on their damage bonus. It is designed around rotating the whole team, so a correct rotation never notices it."
+  },
+
+  "outro": "Damage plus 20% all-type DMG amp, or 20% Electro DMG amp while in Electro Flare mode.",
+
+  "rotations": {
+    "electro_flare": {
+      "label": "Electro Flare rotation",
+      "chapter_seconds": 238,
+      "steps": [
+        { "step": "intro",             "action": "intro" },
+        { "step": "basic x1",          "action": "normal_attack", "count": 1 },
+        { "step": "heavy",             "action": "enhanced_heavy_1", "detector": "mouse_forte" },
+        { "step": "echo",              "action": "echo" },
+        { "step": "liberation 1",      "action": "liberation" },
+        { "step": "basic, E, basic, E","action": "fill_second_bar", "count": 2,
+          "note": "Alternating 1 basic + 1 E fills the bottom bar immediately." },
+        { "step": "enhanced E",        "action": "enhanced_e", "detector": "e_forte" },
+        { "step": "basic x4",          "action": "normal_attack", "count": 4, "note": "Opens all locks." },
+        { "step": "hold basic",        "action": "enhanced_heavy_2", "detector": "mouse_forte" },
+        { "step": "liberation 2",      "action": "liberation" },
+        { "step": "switch",            "action": "switch_next_char" }
+      ]
+    },
+    "unison": {
+      "label": "Unison rotation (two visits)",
+      "chapter_seconds": 279,
+      "note": "Intro -> basic -> heavy -> Liberation never changes. Unison adds one extra basic after intro and splits the rotation across two visits.",
+      "pass_1": [
+        { "step": "intro",        "action": "intro" },
+        { "step": "basic x2",     "action": "normal_attack", "count": 2, "note": "One EXTRA basic vs Electro Flare." },
+        { "step": "heavy",        "action": "enhanced_heavy_1", "detector": "mouse_forte" },
+        { "step": "echo",         "action": "echo" },
+        { "step": "liberation 1", "action": "liberation" },
+        { "step": "outro",        "action": "switch_next_char",
+          "note": "Must happen within the 5s Unison window to fire the Unison Response." }
+      ],
+      "pass_2": [
+        { "step": "intro (Manifold Unison)", "action": "intro" },
+        { "step": "skip filler",  "action": "skip", "note": "Skips the basic/E filler that Electro Flare does." },
+        { "step": "basic x4",     "action": "normal_attack", "count": 4 },
+        { "step": "hold basic",   "action": "enhanced_heavy_2", "detector": "mouse_forte" },
+        { "step": "liberation 2", "action": "liberation" },
+        { "step": "switch",       "action": "switch_next_char" }
+      ],
+      "team_order": "1 -> 2 -> 3 -> 2 -> 3 -> 1 (e.g. Shorekeeper, Jinhsi, Hsin, Jinhsi, Hsin, Shorekeeper)"
+    }
+  },
+
+  "build": {
+    "echo_set": "Heart of Sworn Vigil (5pc)",
+    "main_echo": "Reminiscence: Suhsin the Inevitable",
+    "cost_layout": "4-3-3-1-1",
+    "main_stats": {
+      "cost_4": "CRIT DMG or CRIT Rate (keep roughly 1:2 crit rate to crit dmg)",
+      "cost_3": "1x Electro DMG% + 1x ATK%",
+      "cost_1": "ATK%"
+    },
+    "substat_priority": ["CRIT Rate", "CRIT DMG", "ATK%", "Resonance Skill DMG Bonus", "Flat ATK"],
+    "energy_regen": "at least 125% for a smooth rotation",
+    "weapons": [
+      { "name": "Blooming Jadehaven", "rank": 1, "note": "Signature. All-attribute DMG bonus, Resonance Skill DMG amp, ignores DEF, +30% Electro Flare DMG taken. A clear step above everything else." },
+      { "name": "Lethean Elegy",      "rank": 2, "note": "Phrolova's signature." },
+      { "name": "Stringmaster",       "rank": 3, "note": "Yinlin's signature." }
+    ],
+    "weapon_note": "Anything below the top three is considered relatively weak."
+  },
+
+  "sequences": {
+    "S1": "Anti-interruption: 2 stacks of Radiance Ward, each blocks one interruption and cuts damage taken by 60%. Intro skill DMG +15%, and Unison Boon adds +10% intro multiplier up to 4 stacks. If Heart of Thunder is below 50 at combat start it is set to 50, so Resonance Skill immediately applies Stagnation.",
+    "S2": "~15% damage. On entering combat all cooldowns reset and 100 points of the first gauge are restored, so you can immediately enhanced-heavy into the first Liberation. Enhanced heavy attack damage +60%.",
+    "S3": "~25% damage. Big Liberation DMG +70%. In Unison, big Liberation CRIT DMG +20% per Unison Boon stack (up to 4 = +60%). In Electro Flare, the big Liberation triggers one extra Electro Flare instance at a 1500% multiplier.",
+    "S4": "All resonators gain 20% all-attribute DMG bonus.",
+    "S5": "Death insurance: restores to 100% max HP and grants damage immunity, once every 10 minutes.",
+    "S6": "~50-60% damage. Enemies take 40% more Resonance Skill DMG from Hsin and she ignores 20% DEF with Resonance Skill. Max Unison Boon stacks +1, and any resonator triggering a Unison Response grants every resonator an extra boon stack. In Electro Flare, Electro Flare DMG can now crit at a fixed 80% crit rate / 230% crit DMG.",
+    "pull_recommendation": "S0R1 first (one copy plus the signature weapon). After that S1-S3, then jump to S6."
+  },
+
+  "teams": [
+    {
+      "id": "hsin_unison_jinhsi",
+      "label": "Unison team (currently available)",
+      "mode": "unison",
+      "order": ["char_shorekeeper", "char_jinhsi", "char_hsin"],
+      "note": "Set Hsin's resonance mode to Unison. Rotation order is 1-2-3-2-3-1."
+    },
+    {
+      "id": "hsin_unison_suoming",
+      "label": "Unison team (after Suoming releases)",
+      "mode": "unison",
+      "order": ["char_shorekeeper", "char_suoming", "char_hsin"],
+      "note": "Suoming replaces Jinhsi's role."
+    },
+    {
+      "id": "hsin_flare_rover",
+      "label": "Electro Flare team",
+      "mode": "electro_flare",
+      "order": ["char_douling", "char_rover", "char_hsin"],
+      "note": "Set Hsin's resonance mode to Electro Flare. Electro Rover is the Flare applicator; Buling (Douling) is the budget third, Suisui/Chisa raise the Flare stack ceiling."
+    }
+  ],
+
+  "automation_mapping": {
+    "note": "How the guide maps onto detectors the bot already has. Both of Hsin's visual cues are generic ok-ww features that are already annotated, so no new templates are required for the rotation itself.",
+    "mouse_forte": "The 'basic attack is glowing' cue. Gates both enhanced heavy attacks.",
+    "e_forte": "The 'E skill is shining' cue. Gates the enhanced Resonance Skill.",
+    "liberation": "Standard liberation availability check covers both the first and the big Liberation.",
+    "unresolved": [
+      "No dedicated template distinguishes Unison form from Electro Flare form on the HUD, so the mode is a user config flag ('Hsin Unison Mode') rather than a detection.",
+      "The diamond timer under the gauge and the red centre symbol are not yet annotated; they would let the bot measure the first-Liberation window instead of using a timeout."
+    ]
+  },
+
+  "capture_points": [
+    {
+      "id": "hsin_basic_combo",
+      "seconds": 22,
+      "anchor": "interpolated",
+      "chapter": "Basic Attack",
+      "cue": "four hit combo in her normal form",
+      "what": "4-hit basic attack combo in base form",
+      "annotate": ["hud_forte_gauge", "hud_skill_bar"],
+      "purpose": "reference"
+    },
+    {
+      "id": "hsin_heavy_attack",
+      "seconds": 36,
+      "anchor": "interpolated",
+      "chapter": "Basic Attack",
+      "cue": "holding will trigger her own uh heavy attack",
+      "what": "Held-LMB heavy attack that skips to combo hit 2",
+      "annotate": ["hud_forte_gauge"],
+      "purpose": "reference"
+    },
+    {
+      "id": "hsin_fox_form",
+      "seconds": 94,
+      "anchor": "interpolated",
+      "chapter": "Basic Attack",
+      "cue": "you turn into this fox",
+      "what": "Resonance Skill fox form active",
+      "annotate": ["hsin_fox_form"],
+      "purpose": "candidate_template",
+      "candidate_category": "hsin_fox_form",
+      "note": "Would let the bot detect it is stuck in fox form and press E to revert."
+    },
+    {
+      "id": "hsin_forte_building",
+      "seconds": 141,
+      "anchor": "interpolated",
+      "chapter": "Forte",
+      "cue": "you just keep attacking until it's full",
+      "what": "First forte bar partially filled",
+      "annotate": ["hud_forte_gauge"],
+      "purpose": "negative_sample",
+      "note": "Useful as a negative sample for the mouse_forte detector."
+    },
+    {
+      "id": "hsin_mouse_forte_glow",
+      "seconds": 146,
+      "anchor": "interpolated",
+      "chapter": "Forte",
+      "cue": "bottom right that basic attack is glowing",
+      "what": "First forte bar FULL - basic attack icon glowing",
+      "annotate": ["mouse_forte"],
+      "purpose": "verify_existing_template",
+      "priority": "high",
+      "note": "Primary gate for enhanced_heavy_1. Confirms the existing generic mouse_forte template fires on Hsin's HUD."
+    },
+    {
+      "id": "hsin_red_symbol_lib1_ready",
+      "seconds": 162,
+      "anchor": "interpolated",
+      "chapter": "Forte",
+      "cue": "red symbol in the center",
+      "what": "Gauge shows red centre symbol, first Liberation ready",
+      "annotate": ["hsin_lib1_ready"],
+      "purpose": "candidate_template",
+      "candidate_category": "hsin_lib1_ready",
+      "priority": "high",
+      "note": "Would let the bot tell the first Liberation apart from the big finisher Liberation."
+    },
+    {
+      "id": "hsin_diamond_timer",
+      "seconds": 174,
+      "anchor": "interpolated",
+      "chapter": "Forte",
+      "cue": "These diamonds at the bottom",
+      "what": "Diamond timer under the gauge during first-Liberation form",
+      "annotate": ["hsin_form_timer"],
+      "purpose": "candidate_template",
+      "candidate_category": "hsin_form_timer",
+      "note": "Would replace the hard-coded form timeout with a real measurement."
+    },
+    {
+      "id": "hsin_e_forte_shine",
+      "seconds": 211,
+      "anchor": "interpolated",
+      "chapter": "Forte",
+      "cue": "you see your E skill is shining",
+      "what": "Second bar FULL - E skill icon shining",
+      "annotate": ["e_forte"],
+      "purpose": "verify_existing_template",
+      "priority": "high",
+      "note": "Primary gate for the enhanced Resonance Skill."
+    },
+    {
+      "id": "hsin_locks_open",
+      "seconds": 221,
+      "anchor": "interpolated",
+      "chapter": "Forte",
+      "cue": "four basic attack and you will open all the locks",
+      "what": "All gauge locks opened after 4 basic attacks",
+      "annotate": ["hsin_locks_open"],
+      "purpose": "candidate_template",
+      "candidate_category": "hsin_locks_open",
+      "note": "Would replace the fixed 4-hit count with a real check."
+    },
+    {
+      "id": "hsin_final_heavy",
+      "seconds": 229,
+      "anchor": "interpolated",
+      "chapter": "Forte",
+      "cue": "hold basic attack and she will do her last enhance",
+      "what": "Final enhanced heavy attack",
+      "annotate": ["mouse_forte"],
+      "purpose": "verify_existing_template"
+    },
+    {
+      "id": "hsin_cheatsheet_electro",
+      "seconds": 238,
+      "anchor": "chapter_exact",
+      "chapter": "Electro Rotation",
+      "cue": "refer to the cheat sheet on the screen",
+      "what": "Electro Flare rotation cheat sheet overlay",
+      "annotate": [],
+      "purpose": "documentation",
+      "priority": "high",
+      "note": "Ground truth for the electro_flare rotation encoded in src/char/Hsin.py."
+    },
+    {
+      "id": "hsin_cheatsheet_unison",
+      "seconds": 279,
+      "anchor": "chapter_exact",
+      "chapter": "Unison Rotation",
+      "cue": "unison will have a small change in her input rotation",
+      "what": "Unison rotation cheat sheet overlay",
+      "annotate": [],
+      "purpose": "documentation",
+      "priority": "high",
+      "note": "Ground truth for the unison two-pass rotation."
+    },
+    {
+      "id": "hsin_unison_demo_pass1",
+      "seconds": 415,
+      "anchor": "interpolated",
+      "chapter": "Unison Rotation",
+      "cue": "Sin in two basic heavy attack",
+      "what": "Live demo of Unison pass 1 (2 basics then heavy)",
+      "annotate": [],
+      "purpose": "documentation"
+    },
+    {
+      "id": "hsin_manifold_unison",
+      "seconds": 609,
+      "anchor": "interpolated",
+      "chapter": "Skill Details",
+      "cue": "Manifold Unison",
+      "what": "Manifold Unison enhanced intro explanation",
+      "annotate": [],
+      "purpose": "documentation"
+    },
+    {
+      "id": "hsin_weapons",
+      "seconds": 700,
+      "anchor": "chapter_exact",
+      "chapter": "Weapon",
+      "what": "Weapon ranking screen",
+      "annotate": [],
+      "purpose": "documentation"
+    },
+    {
+      "id": "hsin_echo_set",
+      "seconds": 729,
+      "anchor": "chapter_exact",
+      "chapter": "Echo",
+      "what": "Heart of Sworn Vigil echo set and main stats",
+      "annotate": [],
+      "purpose": "documentation"
+    },
+    {
+      "id": "hsin_team_unison",
+      "seconds": 965,
+      "anchor": "chapter_exact",
+      "chapter": "Unison Team",
+      "what": "Unison team composition graphic",
+      "annotate": [],
+      "purpose": "documentation"
+    },
+    {
+      "id": "hsin_team_electro",
+      "seconds": 983,
+      "anchor": "chapter_exact",
+      "chapter": "Electro Team",
+      "what": "Electro Flare team composition graphic",
+      "annotate": [],
+      "purpose": "documentation"
+    },
+    {
+      "id": "hsin_team_rotation_cheatsheet",
+      "seconds": 994,
+      "anchor": "chapter_exact",
+      "chapter": "Team Rotation",
+      "what": "Full team rotation cheat sheet",
+      "annotate": [],
+      "purpose": "documentation",
+      "priority": "high"
+    }
+  ],
+
+  "capture_notes": {
+    "anchor_meaning": {
+      "chapter_exact": "Taken verbatim from the author's chapter list in the video description - exact.",
+      "interpolated": "Estimated by locating the spoken cue inside its chapter and interpolating by word position between the two surrounding exact chapter anchors. Expect a few seconds of drift, so capture a window and pick the best frame."
+    },
+    "recommended_window_seconds": 4,
+    "tool": "training/capture_frames.py"
+  }
+}

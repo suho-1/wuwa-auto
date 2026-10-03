@@ -7243,6 +7243,26 @@
             "id": 316,
             "name": "box_resonance_cd",
             "supercategory": ""
+        },
+        {
+            "id": 317,
+            "name": "hsin_fox_form",
+            "supercategory": ""
+        },
+        {
+            "id": 318,
+            "name": "hsin_lib1_ready",
+            "supercategory": ""
+        },
+        {
+            "id": 319,
+            "name": "hsin_form_timer",
+            "supercategory": ""
+        },
+        {
+            "id": 320,
+            "name": "hsin_locks_open",
+            "supercategory": ""
         }
     ]
 }

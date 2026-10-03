@@ -310,6 +310,38 @@
       "rarity": 5,
       "role": "MainDPS",
       "tier": "T0.5",
+      "best_echo_set": "Heart of Sworn Vigil (5pc)",
+      "main_echo": "Reminiscence: Suhsin the Inevitable",
+      "weapon_recommendation": "Blooming Jadehaven (signature) / Lethean Elegy / Stringmaster",
+      "damage_profile": "Resonance Skill DMG via enhanced heavy attacks and dual Liberations",
+      "forte_mechanic": "Two gauges. Basic/heavy/intro/skill fill the first bar; when the basic attack icon glows, hold basic for the enhanced heavy, which arms the first Liberation. Alternating basic and E refills the second bar; when the E icon shines, cast the enhanced E to open a 14s window: 4 basics unlock the gauge, hold basic for the final enhanced heavy, finish with the big Liberation.",
+      "resonance_modes": [
+        "Electro Flare",
+        "Unison"
+      ],
+      "resonance_mode_config": "Hsin Unison Mode",
+      "energy_regen_target": "125%",
+      "skill_priority": [
+        "Inherent Skill 1",
+        "Inherent Skill 2",
+        "Forte Circuit",
+        "Resonance Liberation",
+        "Intro Skill",
+        "Basic Attack",
+        "Resonance Skill"
+      ],
+      "outro_buff": "20% all-type DMG amp, or 20% Electro DMG amp in Electro Flare mode",
+      "synergies": [
+        "char_shorekeeper",
+        "char_jinhsi",
+        "char_suoming",
+        "char_rover",
+        "char_douling",
+        "char_suisui",
+        "char_chisa"
+      ],
+      "guide_url": "https://www.youtube.com/watch?v=-JiixPs82UI",
+      "guide_data": "training/char_guides/hsin.json",
       "tags": [
         "Flare",
         "Unison",
@@ -950,16 +982,53 @@
       "synergy_summary": "Prydwen ToA T0 (3.7): Yangyang Xuanling Havoc Bane carry with Chisa Bane support."
     },
     {
-      "id": "hsin_rover_verina",
-      "name": "Hsin + Rover (Electro) Partner Combo (3.7)",
+      "id": "hsin_unison_jinhsi",
+      "name": "Hsin Unison Quickswap (3.7)",
       "tier": "T0.5",
       "slots": [
         {
           "role": "Healer",
-          "character": "char_verina",
+          "character": "char_shorekeeper",
           "fallback": [
-            "char_shorekeeper",
+            "char_verina",
             "char_douling"
+          ],
+          "echo_set": "Rejuvenating Glow (5pc)",
+          "main_echo": "Fallacy of No Return"
+        },
+        {
+          "role": "SubDPS",
+          "character": "char_jinhsi",
+          "fallback": [
+            "char_suoming"
+          ],
+          "echo_set": "Celestial Light (5pc)",
+          "main_echo": "Jué"
+        },
+        {
+          "role": "MainDPS",
+          "character": "char_hsin",
+          "echo_set": "Heart of Sworn Vigil (5pc)",
+          "main_echo": "Reminiscence: Suhsin the Inevitable"
+        }
+      ],
+      "guide_url": "https://www.youtube.com/watch?v=-JiixPs82UI",
+      "rotation_order": "1-2-3-2-3-1",
+      "synergy_summary": "Rexlent 16:05. Set Hsin's Resonance Mode to Unison. Shorekeeper opens, Jinhsi runs to her dragon beam and triggers Unison, Hsin enters for 2 basics into enhanced heavy and the first Liberation, then outros inside the 5s Unison window. Jinhsi cycles again, Hsin returns on the Manifold Unison intro and finishes with the big Liberation. Suoming replaces Jinhsi on release."
+    },
+    {
+      "id": "hsin_flare_rover",
+      "name": "Hsin Electro Flare (3.7)",
+      "tier": "T0.5",
+      "slots": [
+        {
+          "role": "Healer",
+          "character": "char_douling",
+          "fallback": [
+            "char_suisui",
+            "char_chisa",
+            "char_shorekeeper",
+            "char_verina"
           ],
           "echo_set": "Rejuvenating Glow (5pc)",
           "main_echo": "Bell-Borne Geochelone"
@@ -971,17 +1040,19 @@
             "char_yinlin",
             "char_lumi"
           ],
-          "echo_set": "Void Thunder / Flare set (5pc)",
+          "echo_set": "Void Thunder (5pc)",
           "main_echo": "Thundering Mephis"
         },
         {
           "role": "MainDPS",
           "character": "char_hsin",
-          "echo_set": "Void Thunder / Flare set (5pc)",
-          "main_echo": "4-Cost Electro"
+          "echo_set": "Heart of Sworn Vigil (5pc)",
+          "main_echo": "Reminiscence: Suhsin the Inevitable"
         }
       ],
-      "synergy_summary": "Prydwen partner tag: Hsin (Flare/Unison/Coord) pairs with Rover Electro form for Electro Flare stacking; Verina or Buling sustains."
+      "guide_url": "https://www.youtube.com/watch?v=-JiixPs82UI",
+      "rotation_order": "1-2-3",
+      "synergy_summary": "Rexlent 16:23. Set Hsin's Resonance Mode to Electro Flare. Electro Rover applies Flare and both he and Hsin gain a further 20% Electro DMG bonus from her first inherent skill. Hsin runs the whole rotation in one visit. Suisui or Chisa push the Flare stack ceiling from 10 to 16; Buling is the cheaper sustain."
     },
     {
       "id": "rover_danjin_verina",
@@ -1435,6 +1506,13 @@
   "meta": {
     "tier_source": "prydwen.gg Wuthering Waves Tower of Adversity tier list, patch 3.7",
     "tier_fetched": "2026-10-01",
-    "tier_scale": "T0 (best) .. T4 (niche); legacy team entries re-tiered to their Main DPS current tier"
+    "tier_scale": "T0 (best) .. T4 (niche); legacy team entries re-tiered to their Main DPS current tier",
+    "character_guides": {
+      "char_hsin": {
+        "video": "https://www.youtube.com/watch?v=-JiixPs82UI",
+        "data": "training/char_guides/hsin.json",
+        "transcript": "training/transcripts/hsin_-JiixPs82UI.en.txt"
+      }
+    }
   }
 }

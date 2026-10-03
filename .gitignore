@@ -54,3 +54,6 @@ training/dataset/
 training/runs/
 training/annotations/*.txt
 !training/annotations/.gitkeep
+
+# Guide-driven frame captures (large binaries)
+training/captures/

@@ -98,7 +98,87 @@ The script automatically exports:
 
 ---
 
-## 4. Retraining on New Game Patches
+## 4. Character Guide Workflow (Rexlent "WuWa Guides" playlist)
+
+Combat logic for individual resonators is driven by the Rexlent guide playlist
+[`PLT669jfZO0z9sA1RCWuQfIpufrIkI3s3f`](https://www.youtube.com/playlist?list=PLT669jfZO0z9sA1RCWuQfIpufrIkI3s3f).
+One character is processed at a time and each one produces the same four artefacts:
+
+| Artefact | Path | Purpose |
+| :--- | :--- | :--- |
+| Transcript | `training/transcripts/<char>_<videoid>.en.txt` | Source text with the author's official chapter marks |
+| Guide data | `training/char_guides/<char>.json` | Structured moves, rotations, build, teams, capture points |
+| Combat logic | `src/char/<Char>.py` | The rotation, with the guide timestamp cited per phase |
+| Team data | `configs/rexlent_teams.json` | Character entry plus meta teams, linked by `guide_url` |
+
+### Step 1: Capture the guide knowledge
+Pull the transcript and the chapter list from the video description. Chapter
+marks are exact timestamps; anything in between is estimated by locating the
+spoken cue inside its chapter and interpolating by word position. Record which
+of the two it is in the `anchor` field (`chapter_exact` or `interpolated`).
+
+### Step 2: Describe the capture points
+Each entry in `capture_points` is a timestamp plus what is on screen, and is
+tagged with a `purpose`:
+
+* `verify_existing_template` - confirms a generic detector (e.g. `mouse_forte`)
+  fires on this character's HUD.
+* `candidate_template` - a character-specific cue that has no template yet.
+  Name it in `candidate_category`.
+* `negative_sample` - a near-miss frame, useful for threshold tuning.
+* `reference` / `documentation` - cheat sheets and move demos for humans.
+
+### Step 3: Extract and annotate frames
+```bash
+python training/capture_frames.py list     --guide training/char_guides/hsin.json
+python training/capture_frames.py download --guide training/char_guides/hsin.json
+python training/capture_frames.py capture  --guide training/char_guides/hsin.json
+```
+Interpolated points are sampled across a window (default 4s), black/fade frames
+are discarded and the sharpest candidate is promoted. Every frame is written
+twice: `<id>.png` (clean) and `<id>_annotated.png` (caption banner plus the
+detector regions the bot actually searches, including the search variance
+padding). Output goes to `training/captures/<char>/`, which is gitignored.
+
+> **Templates must come from real game pixels.** A frame from a compressed
+> YouTube upload is fine for *locating* a feature and for review, but a
+> template that ships should be cropped from a clean in-game screenshot at the
+> capture resolution. `capture_frames.py register` therefore only creates the
+> COCO *categories* - it never invents bounding boxes.
+
+### Step 4: Register and annotate new templates
+```bash
+python training/capture_frames.py register --guide training/char_guides/hsin.json
+python tools/add_char_annotations.py --check
+```
+Then draw the boxes in the Annotation Studio, or pass explicit coordinates to
+`tools/add_char_annotations.py`.
+
+### Step 5: Implement and pin the rotation
+Write the rotation in `src/char/<Char>.py`, citing the guide timestamp for each
+phase, and add a test that pins the input order so later refactors cannot drift
+from the guide. See `src/char/Hsin.py` and `tests/test_hsin_rotation.py`.
+
+Prefer the existing generic detectors over new templates where the guide's cue
+already maps onto one:
+
+| Guide wording | Detector | Meaning |
+| :--- | :--- | :--- |
+| "the basic attack is glowing" | `mouse_forte` | Forte bar full, hold basic attack |
+| "your E skill is shining" | `e_forte` | Enhanced Resonance Skill ready |
+
+If a character has a player-selected mode that changes the rotation (Hsin's
+Unison vs Electro Flare), expose it as a flag in `char_config_option` in
+`config.py` rather than guessing it from the HUD.
+
+### Progress
+| # | Character | Video | Status |
+| :--- | :--- | :--- | :--- |
+| 1 | Hsin | [`-JiixPs82UI`](https://www.youtube.com/watch?v=-JiixPs82UI) | Guide data, rotation, teams and tests done. Frame capture pending a machine with YouTube access. |
+
+---
+
+## 5. Retraining on New Game Patches
 When a new game patch drops with new areas, bosses, or mechanics:
 1. Download 2-3 YouTube showcase walkthroughs of the new area.
 2. Extract frames using `python training/pipeline.py extract`.

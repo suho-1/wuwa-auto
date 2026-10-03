@@ -141,7 +141,15 @@ key_config_option = ConfigOption('Game Hotkey', {
 char_config_option = ConfigOption('Character Config', {
     'Iuno C6': False,
     'Chisa DPS': False,
-}, description='Character Config', show_at_tab=True, icon=Icon.PEOPLE)
+    'Hsin Unison Mode': False,
+}, description='Character Config', config_description={
+    'Iuno C6': 'Turn on if your Iuno is at Sequence 6.',
+    'Chisa DPS': 'Turn on to run Chisa as a Main DPS instead of a support.',
+    'Hsin Unison Mode': 'Turn on if Hsin\'s in-game Resonance Mode is set to Unison. '
+                        'Unison splits her rotation across two visits (intro, 2 basics, '
+                        'heavy, Liberation, then outro inside the 5s Unison window). '
+                        'Leave off for Electro Flare, which does the whole rotation in one go.',
+}, show_at_tab=True, icon=Icon.PEOPLE)
 
 monthly_card_config_option = ConfigOption('Monthly Card Config', {
     'Check Monthly Card': True,
