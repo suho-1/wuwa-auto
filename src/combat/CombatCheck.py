@@ -1,7 +1,10 @@
 import re
 import time
 
-import win32api
+try:
+    import win32api
+except ImportError:  # Allows non-Windows analysis and unit tests to import combat logic.
+    win32api = None
 
 from ok import Logger
 from ok import find_color_rectangles, get_mask_in_color_range
@@ -217,7 +220,11 @@ class CombatCheck(BaseWWTask):
         try:
             return self.do_check_in_combat(target)
         except Exception as e:
+            # Do not leave stale combat and cooldown state behind after a
+            # capture/template/OCR failure.  A later trigger gets a clean
+            # detection pass instead of continuing a rotation from old state.
             logger.error('do_check_in_combat:', e)
+            return self.reset_to_false(reason=f'combat check failed: {type(e).__name__}')
         finally:
             self.in_sleep_check = False
 
@@ -250,7 +257,7 @@ class CombatCheck(BaseWWTask):
         if not levitator:
             self.send_key_up(self.key_config.get('Wheel Key'))
             raise Exception('no levitator tool in the tab wheel!')
-        is_fg = bool(self.hwnd and getattr(self.hwnd, 'is_foreground', lambda: False)())
+        is_fg = bool(win32api and self.hwnd and getattr(self.hwnd, 'is_foreground', lambda: False)())
         if is_fg:
             old = win32api.GetCursorPos()
             self.move(levitator.x, levitator.y)
@@ -437,12 +444,12 @@ class CombatCheck(BaseWWTask):
     def keep_boss_text_white(self):
         cropped = self.boss_lv_box.crop_frame(self.frame)
         mask, area = get_mask_in_color_range(cropped, boss_white_text_color)
-        if area / mask.shape[0] * mask.shape[1] < 0.05:
+        if area / mask.size < 0.05:
             mask, area = get_mask_in_color_range(cropped, boss_orange_text_color)
-            if area / mask.shape[0] * mask.shape[1] < 0.05:
+            if area / mask.size < 0.05:
                 mask, area = get_mask_in_color_range(cropped,
                                                      boss_red_text_color)
-                if area / mask.shape[0] * mask.shape[1] < 0.05:
+                if area / mask.size < 0.05:
                     logger.error('keep_boss_text_white cant find text with the correct color')
                     return None, 0
         return cropped, mask
