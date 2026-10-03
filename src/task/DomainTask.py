@@ -4,6 +4,7 @@ from ok import Logger
 from src.task.BaseCombatTask import BaseCombatTask, NotInCombatException, CharDeadException
 from src.task.WWOneTimeTask import WWOneTimeTask
 from src.task.BaseWWTask import AreaLockedException
+from src.task.waveplates import can_start_waveplate_run
 
 logger = Logger.get_logger(__name__)
 
@@ -55,7 +56,8 @@ class DomainTask(WWOneTimeTask, BaseCombatTask):
         recovery_retries = 0
         while True:
             current, _, total = self.open_F2_book_and_get_stamina()
-            if total < self.stamina_once or (must_use == 0 and current < self.stamina_once):
+            if not can_start_waveplate_run(
+                    current, total, self.stamina_once, must_use):
                 self.log_info('not enough stamina', notify=True)
                 self.back()
                 return

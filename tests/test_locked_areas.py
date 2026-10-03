@@ -1,6 +1,7 @@
 """Unit tests for Skip Locked Areas detection and error handling."""
 
 import os
+import re
 import sys
 import unittest
 from unittest.mock import MagicMock
@@ -193,6 +194,42 @@ class LockedAreaTests(unittest.TestCase):
         self.assertTrue(task._recover_to_guidebook.called)
         warning_calls = [str(call) for call in task.log_warning.call_args_list]
         self.assertTrue(any('Skipping' in w or 'failed' in w for w in warning_calls))
+
+    def test_nightmare_nest_empty_scan_logs_raw_ocr_and_saves_region(self):
+        task = NightmareNestTask.__new__(NightmareNestTask)
+        task.count_re = re.compile(r"(\d{1,3})\s*[/|]\s*(\d{1,3})")
+        action = MagicMock()
+        action.__name__ = 'go_nest'
+        task.queues = [action]
+        raw_box = MagicMock()
+        raw_box.name = 'Remaining Attempts 0 of 48'
+        task.ocr = MagicMock(side_effect=[[], [raw_box]])
+        task.log_warning = MagicMock()
+        task.log_info = MagicMock()
+        task._save_scan_region = MagicMock()
+
+        result = task.find_nest()
+
+        self.assertIsNone(result)
+        self.assertEqual(task.ocr.call_count, 2)
+        self.assertIn('raw OCR', task.log_warning.call_args.args[0])
+        self.assertIn('Remaining Attempts 0 of 48', task._scan_diagnostics[0])
+        task._save_scan_region.assert_called_once()
+
+    def test_nightmare_nest_no_target_result_is_explicit_failure(self):
+        task = NightmareNestTask.__new__(NightmareNestTask)
+        task._scan_diagnostics = ['go_nest: no progress counters']
+        task._capture_success = False
+        task.log_warning = MagicMock()
+        task.log_info = MagicMock()
+
+        result = task._report_nest_result(0, capture_mode=False)
+
+        self.assertFalse(result)
+        warning = task.log_warning.call_args.args[0]
+        self.assertIn('finished without action', warning)
+        self.assertIn('no eligible incomplete nest', warning)
+        self.assertTrue(task.log_warning.call_args.kwargs['notify'])
 
     def test_nightmare_nest_find_nest_skips_locked_row(self):
         task = NightmareNestTask.__new__(NightmareNestTask)

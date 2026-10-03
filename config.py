@@ -194,7 +194,10 @@ monthly_card_config_option = ConfigOption('Monthly Card Config', {
 config = {
     'debug': False,  # Optional, default: False
     'custom_tasks': True,
-    "gui": None,
+    # The desktop application is the default experience.  Headless task runs
+    # still work through ``--headless`` and the legacy terminal dashboard can
+    # be launched explicitly with ``python main.py --tui``.
+    "gui": {"type": "qt"},
     'config_folder': 'configs',
     'blur_area': blur_area,
     'gui_icon': 'icons/icon.png',

@@ -45,7 +45,7 @@ Please note, according to Kuro Games' official Fair Play Declaration for Wutheri
 *   **Auto Combat** — Intelligent rotational combat for all resonators with character-specific skill chains.
 *   **Echo Farming** — Automated echo boss tracking with minimap navigation, locked-area skipping, and 360° camera scanning.
 *   **Daily Routines** — One-click daily task runner: simulation, forgery, tacet fields, and waveplate management.
-*   **TUI Dashboard** — Headless terminal interface for managing routines without a GUI.
+*   **Desktop Control Center** — A native Windows interface for capture setup, triggers, routines, live status, logs, and configuration.
 *   **Chest Exploration** — Automated route playback for chest hunting across all regions.
 
 ## 🚀 Quick Start
@@ -58,7 +58,7 @@ Please note, according to Kuro Games' official Fair Play Declaration for Wutheri
     ```bash
     pip install -r requirements.txt --upgrade
     ```
-3.  **Run**:
+3.  **Run the desktop app**:
     ```bash
     python main.py
     ```
@@ -67,9 +67,26 @@ Please note, according to Kuro Games' official Fair Play Declaration for Wutheri
     wuwa-auto.bat
     ```
 
+    The native **wuwa-auto** control center opens by default. The previous terminal dashboard remains available as an optional compatibility mode:
+    ```bash
+    python main.py --tui
+    ```
+
+### Safe Daily recovery sequence
+
+Until a Windows/game build has passed end-to-end checks, use **Daily Task → Execution Mode** in this order:
+
+1. **Read Only (Guidebook Check)** — reads Activity and the 180-Waveplate objective, then returns to the world without claiming or spending.
+2. **One Simulation (40 Waveplates)** — performs one selected Simulation claim and reports the before/after regular and reserve Waveplates.
+3. **Full Daily Routine** — enable only after the first two modes pass. **Always Burn Waveplates** is a separate opt-in and is disabled by default.
+
+A verified one-Simulation run must show a 39–41 regular-Waveplate decrease (allowing one regenerated point) and no reserve-Waveplate change. The routine no longer reports completion unless final Activity OCR confirms 100/100.
+
 ## 🔧 Troubleshooting
 
-If you encounter issues, please check the following before opening an issue:
+If you encounter issues, first inspect the startup identity in `logs/wuwa-auto.log` or launcher output. A current recovery launch prints a line beginning with `WUWA-AUTO STARTUP`; it must show `ui_mode=qt-desktop` and `source_build=recovery-20261003.1`. If the line is absent—or runtime configuration still shows `gui: None` and `tui: True`—an older packaged build is running instead of this source.
+
+Then check the following:
 
 1.  **Antivirus Software** — Add the installation directory to your antivirus whitelist (including Windows Defender) to prevent files from being blocked.
 2.  **Display Settings**:
@@ -106,12 +123,20 @@ python main_debug.py
 ### Command-Line Arguments
 
 ```bash
-# Run the first task automatically and exit when done
-python main.py -t 1 -e
+# Open the desktop UI and start the first task
+python main.py -t 1
+
+# Run the first task without a UI and exit when done
+python main.py --headless -t 1 -e
+
+# Use the legacy terminal dashboard
+python main.py --tui
 ```
 
-*   `-t` / `--task` — Automatically run the Nth task after launch. `1` = first task.
-*   `-e` / `--exit` — Exit the program after the task completes.
+*   `-t` / `--task` — Automatically run a task by its 1-based index, task name, or class name.
+*   `-e` / `--exit` — Exit the game and app after the selected task completes.
+*   `-h` / `--headless` — Run without opening the desktop interface.
+*   `--tui` — Open the legacy terminal dashboard instead of the desktop interface.
 
 ### Running Tests
 
@@ -128,9 +153,9 @@ python -m unittest discover tests
 │   ├── char/           # Character-specific combat rotations
 │   ├── combat/         # Combat check and team advisor
 │   ├── task/           # Automation tasks (echo, daily, dungeon, etc.)
-│   ├── tui/            # Terminal UI dashboard
-│   └── gui/            # Annotation studio
-├── ok/                 # ok-script framework (upstream library)
+│   ├── tui/            # Optional legacy terminal dashboard
+│   └── gui/            # wuwa-auto custom desktop tabs and annotation studio
+├── ok/                 # Automation framework and native Qt desktop UI
 ├── assets/             # YOLO models, sprite atlases, templates
 ├── tests/              # Unit tests and benchmarks
 ├── training/           # Dataset pipeline and labeling tools

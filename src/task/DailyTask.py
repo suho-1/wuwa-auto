@@ -9,8 +9,9 @@ from src.task.GardenTask import GardenTask
 from src.task.MergeEchoTask import MergeEchoTask
 from src.task.NightmareNestTask import NightmareNestTask
 from src.task.TacetTask import TacetTask, TACET_SUPPRESSIONS
-from src.task.SimulationTask import SimulationTask
+from src.task.SimulationTask import SIMULATION_MATERIALS, SimulationTask
 from src.task.WWOneTimeTask import WWOneTimeTask
+from src.task.waveplates import should_spend_waveplates, verified_single_claim
 from src.task.BaseCombatTask import BaseCombatTask
 from src.task.BaseWWTask import AreaLockedException
 
@@ -21,6 +22,10 @@ AUTO_FARM_NIGHTMARE_NEST = 'Auto Farm all Nightmare Nest'
 MERGE_ECHO_IF_DISCARDED_OVER_1000 = 'Merge Echo If discarded > 1000'
 TELEPORT_AND_FARM_4C_ECHO = 'Teleport and Farm 4C Echo'
 ADDITIONAL_TASKS = 'Additional Tasks to Run After Daily Task'
+EXECUTION_MODE = 'Execution Mode'
+READ_ONLY_GATE = 'Read Only (Guidebook Check)'
+ONE_SIMULATION_GATE = 'One Simulation (40 Waveplates)'
+FULL_DAILY_ROUTINE = 'Full Daily Routine'
 
 
 class DailyTask(WWOneTimeTask, BaseCombatTask):
@@ -31,27 +36,32 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
         self.support_schedule_task = True
         self.support_tasks = ["Tacet Suppression", "Forgery Challenge", "Simulation Challenge"]
         self.default_config = {
+            EXECUTION_MODE: READ_ONLY_GATE,
             'Which to Farm': self.support_tasks[0],
             'Which Tacet Suppression to Farm': TACET_SUPPRESSIONS[0],
             'Which Forgery Challenge to Farm': FORGERY_CHALLENGES[0],
             'Material Selection': 'Shell Credit',
             'Simulation Challenge Runs in Daily': 'Run Once (Daily Quest)',
             'Farm Nightmare Nest for Daily Echo': True,
-            'Always Burn Waveplates': True,
+            'Always Burn Waveplates': False,
             ADDITIONAL_TASKS: [CHECK_WEEKLY_GARDEN],
         }
         self.config_description = {
+            EXECUTION_MODE: 'Recovery gate. Start with a read-only Guidebook check, then explicitly test one 40-Waveplate Simulation before enabling the full routine.',
             'Which Tacet Suppression to Farm': 'Select target Tacet Field by Echo Sonata sets and region.',
             'Which Forgery Challenge to Farm': 'Select target Forgery Challenge by weapon and ascension material.',
-            'Material Selection': 'Resonator EXP / Weapon EXP / Shell Credit',
-            'Simulation Challenge Runs in Daily': 'Run once to complete the daily quest (40 waveplates), spend up to 180 waveplates, or burn all waveplates.',
+            'Material Selection': 'Resonator EXP, Weapon EXP, Shell Credits, or Echo EXP (Sealed Tubes).',
+            'Simulation Challenge Runs in Daily': 'Run once, double-claim once, or spend enough to finish the 180-Waveplate daily activity.',
             'Farm Nightmare Nest for Daily Echo': 'Farm 1 Echo from Nightmare Nest to complete Daily Task when needed.',
-            'Always Burn Waveplates': 'Spend waveplates up to 180 even if daily activity points have already reached 100.',
+            'Always Burn Waveplates': 'Opt in to spending all currently regenerated Waveplates. Leave disabled until the one-Simulation recovery gate passes. Reserve Waveplate Crystals are never consumed.',
             ADDITIONAL_TASKS: 'Select optional tasks. Nightmare Nest runs before stamina farming to help complete '
                               'the daily task; the other tasks run afterward.',
         }
-        material_option_list = ['Resonator EXP', 'Weapon EXP', 'Shell Credit']
         self.config_type = {
+            EXECUTION_MODE: {
+                'type': 'drop_down',
+                'options': [READ_ONLY_GATE, ONE_SIMULATION_GATE, FULL_DAILY_ROUTINE],
+            },
             'Which to Farm': {
                 'type': "drop_down",
                 'options': self.support_tasks,
@@ -73,7 +83,7 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
             },
             'Material Selection': {
                 'type': 'drop_down',
-                'options': material_option_list
+                'options': SIMULATION_MATERIALS,
             },
             'Simulation Challenge Runs in Daily': {
                 'type': 'drop_down',
@@ -98,8 +108,6 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
         self.description = "Login, claim monthly card, farm echo, and claim daily reward"
 
     def run(self):
-        self.validate_additional_tasks()
-
         WWOneTimeTask.run(self)
         self.logged_in = False
         self.ensure_main(time_out=180)
@@ -109,7 +117,21 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
         condition2 = self.config.get('Farm Nightmare Nest for Daily Echo')
 
         used_stamina, daily_reward_ready = self.open_daily()
-        need_stamina = (not daily_reward_ready or self.config.get('Always Burn Waveplates', True)) and used_stamina < 180
+        execution_mode = self.config.get(EXECUTION_MODE, READ_ONLY_GATE)
+        if execution_mode == READ_ONLY_GATE:
+            self._finish_read_only_gate(used_stamina, daily_reward_ready)
+            return
+        if execution_mode == ONE_SIMULATION_GATE:
+            self._run_one_simulation_gate(used_stamina, daily_reward_ready)
+            return
+
+        self.validate_additional_tasks()
+        burn_all_waveplates = bool(self.config.get('Always Burn Waveplates', False))
+        need_stamina = should_spend_waveplates(
+            daily_rewards_ready=daily_reward_ready,
+            used_waveplates=used_stamina,
+            burn_all=burn_all_waveplates,
+        )
         need_nightmare = condition1 or (
                 condition2
                 and not daily_reward_ready
@@ -143,20 +165,24 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
             target = self.config.get('Which to Farm', self.support_tasks[0])
             try:
                 if target == self.support_tasks[0]:
-                    self.get_task_by_class(TacetTask).farm_tacet(daily=True, used_stamina=used_stamina,
-                                                                 config=self.config)
+                    self.get_task_by_class(TacetTask).farm_tacet(
+                        daily=True, used_stamina=used_stamina,
+                        config=self.config, burn_all=burn_all_waveplates)
                 elif target == self.support_tasks[1]:
-                    self.get_task_by_class(ForgeryTask).farm_forgery(daily=True, used_stamina=used_stamina,
-                                                                     config=self.config)
+                    self.get_task_by_class(ForgeryTask).farm_forgery(
+                        daily=True, used_stamina=used_stamina,
+                        config=self.config, burn_all=burn_all_waveplates)
                 else:
-                    self.get_task_by_class(SimulationTask).farm_simulation(daily=True, used_stamina=used_stamina,
-                                                                           config=self.config)
+                    self.get_task_by_class(SimulationTask).farm_simulation(
+                        daily=True, used_stamina=used_stamina,
+                        config=self.config, burn_all=burn_all_waveplates)
             except AreaLockedException as e:
                 self.log_warning(f"Selected daily farming domain is in a locked area ({e}). Falling back to Simulation Challenge...")
                 self.ensure_main(time_out=10)
                 try:
-                    self.get_task_by_class(SimulationTask).farm_simulation(daily=True, used_stamina=used_stamina,
-                                                                           config=self.config)
+                    self.get_task_by_class(SimulationTask).farm_simulation(
+                        daily=True, used_stamina=used_stamina,
+                        config=self.config, burn_all=burn_all_waveplates)
                 except Exception as sim_err:
                     self.log_error(f"Fallback simulation also failed: {sim_err}")
             self.sleep(4)
@@ -167,7 +193,148 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
         self.sleep(1)
         self.claim_battle_pass()
         self.run_additional_tasks()
-        self.log_info('Daily Task Completed', notify=True)
+        self._verify_full_routine_result()
+
+    def _daily_points(self):
+        return self.info_get('total daily points', 0)
+
+    def _daily_points_detected(self):
+        return bool(self.info_get('daily points OCR detected', False))
+
+    def _finish_read_only_gate(self, used_stamina, daily_reward_ready):
+        """Finish the non-destructive first recovery gate with observable state."""
+        points = self._daily_points()
+        detected = self._daily_points_detected()
+        if detected:
+            self.log_info(
+                'Daily read-only gate passed: '
+                f'activity={points}/100, waveplate_activity={used_stamina}/180, '
+                f'rewards_ready={daily_reward_ready}. No reward was claimed and no Waveplates were spent.',
+                notify=True,
+            )
+        else:
+            self.log_warning(
+                'Daily read-only gate could not verify Activity points: OCR found no total in the '
+                'expected Guidebook region. No reward was claimed and no Waveplates were spent.',
+                notify=True,
+                screenshot=True,
+            )
+        self.ensure_main(time_out=30)
+
+    def _read_regular_waveplates(self):
+        """Read regular/reserve Waveplates without claiming or spending either currency."""
+        self.openF2Book('gray_book_boss')
+        current, reserve, total = self.get_stamina()
+        self.log_info(
+            f'Daily recovery Waveplate read: regular={current}, reserve={reserve}, total={total}')
+        self.ensure_main(time_out=30)
+        return current, reserve, total
+
+    def _run_one_simulation_gate(self, used_stamina, daily_reward_ready):
+        """Run exactly one Simulation claim and verify the real Waveplate delta."""
+        points_before = self._daily_points()
+        points_before_detected = self._daily_points_detected()
+        self.ensure_main(time_out=30)
+
+        try:
+            regular_before, reserve_before, _ = self._read_regular_waveplates()
+            simulation = self.get_task_by_class(SimulationTask)
+            simulation.farm_simulation(
+                daily=True,
+                used_stamina=used_stamina,
+                config=self.config,
+                once=True,
+                max_runs=1,
+                burn_all=False,
+            )
+            self.sleep(2)
+            regular_after, reserve_after, _ = self._read_regular_waveplates()
+            final_used_stamina, final_reward_ready = self.open_daily()
+            points_after = self._daily_points()
+            points_after_detected = self._daily_points_detected()
+        except AreaLockedException as e:
+            self.log_warning(
+                f'One-Simulation recovery gate failed because the selected challenge is locked: {e}',
+                notify=True,
+                screenshot=True,
+            )
+            self.ensure_main(time_out=30)
+            return False
+        except Exception as e:
+            self.log_error(
+                'One-Simulation recovery gate failed before it could be verified',
+                e,
+                notify=True,
+                screenshot=True,
+            )
+            self.ensure_main(time_out=30)
+            return False
+
+        spent = regular_before - regular_after
+        verified = verified_single_claim(
+            regular_before, regular_after, reserve_before, reserve_after)
+        report = (
+            'One-Simulation recovery report: '
+            f'regular_waveplates={regular_before}->{regular_after} (spent={spent}), '
+            f'reserve={reserve_before}->{reserve_after}, '
+            f'activity_waveplates={used_stamina}->{final_used_stamina}, '
+            f'activity_points={points_before if points_before_detected else "unread"}'
+            f'->{points_after if points_after_detected else "unread"}, '
+            f'rewards_ready={daily_reward_ready}->{final_reward_ready}.'
+        )
+        if verified:
+            self.log_info(f'{report} Gate passed; exactly one 40-Waveplate claim was verified.', notify=True)
+        else:
+            self.log_warning(
+                f'{report} Gate failed: expected a 40-Waveplate regular-currency decrease and no '
+                'reserve-currency change. Full Routine remains unsafe.',
+                notify=True,
+                screenshot=True,
+            )
+        self.ensure_main(time_out=30)
+        return verified
+
+    def _verify_full_routine_result(self):
+        """Never announce Daily completion without rereading Activity points."""
+        try:
+            final_used_stamina, final_reward_ready = self.open_daily()
+            points = self._daily_points()
+            detected = self._daily_points_detected()
+        except Exception as e:
+            self.log_error(
+                'Daily routine actions finished, but final Guidebook verification failed',
+                e,
+                notify=True,
+                screenshot=True,
+            )
+            self.ensure_main(time_out=30)
+            return False
+
+        if detected and final_reward_ready:
+            self.log_info(
+                f'Daily Activity verified complete: activity={points}/100, '
+                f'waveplate_activity={final_used_stamina}/180. '
+                'Reward-button collection is not yet independently verified.',
+                notify=True,
+            )
+            self.ensure_main(time_out=30)
+            return True
+        if detected:
+            self.log_warning(
+                f'Daily routine finished but is incomplete: activity={points}/100, '
+                f'waveplate_activity={final_used_stamina}/180. The task will not report completion.',
+                notify=True,
+                screenshot=True,
+            )
+        else:
+            self.log_warning(
+                'Daily routine actions finished, but Activity-point OCR could not verify completion. '
+                'The task will not report completion.',
+                notify=True,
+                screenshot=True,
+            )
+        self.ensure_main(time_out=30)
+        return False
 
     def validate_additional_tasks(self):
         additional_tasks = self.config.get(ADDITIONAL_TASKS) or []
@@ -291,6 +458,7 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
                     points = 0
             else:
                 points = 0
+        self.info_set('daily points OCR detected', bool(points_boxes))
         self.info_set('total daily points', points)
         return points
 
