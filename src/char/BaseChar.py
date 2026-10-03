@@ -396,7 +396,10 @@ class BaseChar:
         while True:
             if time.time() - start > the_time_out:
                 self.task.in_liberation = False
-                if the_time_out == 0:
+                # ``time_out=0`` means use the normal 15-second safety
+                # timeout. Preserve that information for the user-facing
+                # keybind warning instead of checking the derived value.
+                if time_out == 0:
                     self.alert_skill_failed()
                 break
             elif self.task.in_liberation and time.time() - start > 6:

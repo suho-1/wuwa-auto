@@ -649,16 +649,19 @@ class BaseCombatTask(CombatCheck):
             in_team, current_index, size = self.in_team()
             if not in_team:
                 logger.info(f'not in team while switching chars_{current_char}_to_{switch_to} {now - start}')
-                # if self.debug:
-                #     self.screenshot(f'not in team while switching chars_{current_char}_to_{switch_to} {now - start}')
-                self.raise_not_in_combat('not in_team while switching')
+                # The party HUD is briefly hidden by switch, intro, and
+                # liberation animations. Previously this path always raised
+                # before reaching its timeout check, so a normal transition
+                # could abort auto combat immediately.
                 if now - start > self.switch_char_time_out:
+                    if self.debug:
+                        self.screenshot(f'switch_not_detected_{current_char}_to_{switch_to}')
                     self.raise_not_in_combat(
                         f'switch too long failed chars_{current_char}_to_{switch_to}, {now - start}')
                 self.next_frame()
                 continue
             if current_index != switch_to.index:
-                if now - start > 10:
+                if now - start > self.switch_char_time_out:
                     if self.debug:
                         self.screenshot(f'switch_not_detected_{current_char}_to_{switch_to}')
                     self.raise_not_in_combat('failed switch chars')
