@@ -59,11 +59,15 @@ class DailyWaveplatePolicyTests(unittest.TestCase):
         self.assertTrue(can_start_waveplate_run(
             current=40, total=520, cost=40, quota=0))
 
-    def test_explicit_daily_quota_may_use_reserve_crystals(self):
-        self.assertTrue(can_start_waveplate_run(
-            current=20, total=500, cost=40, quota=40))
+    def test_explicit_daily_quota_does_not_use_reserve_crystals(self):
         self.assertFalse(can_start_waveplate_run(
-            current=20, total=20, cost=40, quota=40))
+            current=20, total=500, cost=40, quota=40))
+        self.assertTrue(can_start_waveplate_run(
+            current=40, total=500, cost=40, quota=40))
+
+    def test_unread_wallet_never_starts_a_claim(self):
+        self.assertFalse(can_start_waveplate_run(
+            current='unread', total=500, cost=40, quota=40))
 
     def test_single_claim_verification_allows_one_regenerated_point(self):
         self.assertTrue(verified_single_claim(244, 204, 0, 0))

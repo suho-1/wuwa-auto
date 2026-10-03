@@ -54,13 +54,15 @@ def verified_single_claim(before_regular, after_regular, before_reserve,
 
 
 def can_start_waveplate_run(current, total, cost, quota):
-    """Check whether another claim can start without unsafe reserve use.
+    """Start a claim only when regenerated Waveplates can pay its full cost.
 
-    A positive quota may use reserve Waveplate Crystals to complete an explicit
-    target.  The zero/burn-all sentinel only spends regenerated Waveplates.
+    ``total`` can include reserve Waveplate Crystal value. No current task has
+    a separate, explicit reserve-currency consent control, so every automatic
+    mode—including the 180 activity target—must ignore that extra balance.
+    ``quota`` remains part of the interface because zero is the domain engine's
+    burn-all sentinel, but it must never weaken this currency-safety rule.
     """
-    if total < cost:
+    try:
+        return int(current) >= int(cost)
+    except (TypeError, ValueError):
         return False
-    if quota == 0 and current < cost:
-        return False
-    return True
