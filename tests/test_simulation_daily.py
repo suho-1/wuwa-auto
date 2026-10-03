@@ -10,7 +10,13 @@ if REPO_ROOT not in sys.path:
 from src.task.BaseWWTask import BaseWWTask
 from src.task.DomainTask import DomainTask
 from src.task.SimulationTask import SimulationTask
-from src.task.DailyTask import DailyTask
+from src.task.DailyTask import (
+    DailyTask,
+    EXECUTION_MODE,
+    READ_ONLY_GATE,
+    ONE_SIMULATION_GATE,
+    FULL_DAILY_ROUTINE,
+)
 
 
 class TestUseStaminaQuota(unittest.TestCase):
@@ -126,6 +132,13 @@ class TestDomainTaskMaxRuns(unittest.TestCase):
 class TestSimulationTaskDaily(unittest.TestCase):
     """Tests for SimulationTask configuration and farm_simulation modes."""
 
+    def test_standalone_default_is_single_recovery_run(self):
+        mock_executor = MagicMock()
+        mock_app = MagicMock()
+        mock_app.config = {}
+        task = SimulationTask(mock_executor, mock_app)
+        self.assertEqual(task.default_config['Farm Mode'], 'Run Once (Daily Quest)')
+
     def test_daily_defaults_to_run_once_40_stamina(self):
         task = SimulationTask.__new__(SimulationTask)
         task.stamina_once = 40
@@ -160,6 +173,22 @@ class TestSimulationTaskDaily(unittest.TestCase):
         max_runs_kwarg = task.farm_domain_with_recovery_loop.call_args.kwargs.get('max_runs')
         self.assertEqual(must_use_arg, 140, "Should spend 180 - 40 = 140 waveplates")
         self.assertEqual(max_runs_kwarg, 0, "max_runs should be 0 (unlimited up to must_use quota)")
+
+    def test_daily_burn_all_overrides_simulation_run_count(self):
+        task = SimulationTask.__new__(SimulationTask)
+        task.stamina_once = 40
+        task.config = {
+            'Material Selection': 'Echo EXP',
+            'Simulation Challenge Runs in Daily': 'Run Once (Daily Quest)',
+        }
+        task.farm_domain_with_recovery_loop = MagicMock()
+
+        task.farm_simulation(daily=True, used_stamina=180, burn_all=True)
+
+        task.farm_domain_with_recovery_loop.assert_called_once()
+        self.assertEqual(task.farm_domain_with_recovery_loop.call_args.args[0], 0)
+        self.assertEqual(
+            task.farm_domain_with_recovery_loop.call_args.kwargs.get('max_runs'), 0)
 
     def test_daily_double_claim_run_once(self):
         task = SimulationTask.__new__(SimulationTask)
@@ -208,6 +237,49 @@ class TestDailyTaskConfig(unittest.TestCase):
         sub_configs = task.config_type['Which to Farm']['sub_configs']['Simulation Challenge']
         self.assertIn('Simulation Challenge Runs in Daily', sub_configs)
         self.assertIn('Run Once (Daily Quest)', task.config_type['Simulation Challenge Runs in Daily']['options'])
+        self.assertIn('Echo EXP', task.config_type['Material Selection']['options'])
+        self.assertEqual(task.default_config.get(EXECUTION_MODE), READ_ONLY_GATE)
+        self.assertFalse(task.default_config.get('Always Burn Waveplates'))
+        self.assertEqual(
+            task.config_type[EXECUTION_MODE]['options'],
+            [READ_ONLY_GATE, ONE_SIMULATION_GATE, FULL_DAILY_ROUTINE],
+        )
+
+    def test_daily_read_only_gate_reports_without_spending_or_claiming(self):
+        task = DailyTask.__new__(DailyTask)
+        task.info = {
+            'total daily points': 20,
+            'daily points OCR detected': True,
+        }
+        task.log_info = MagicMock()
+        task.log_warning = MagicMock()
+        task.ensure_main = MagicMock()
+
+        task._finish_read_only_gate(used_stamina=40, daily_reward_ready=False)
+
+        task.log_info.assert_called_once()
+        self.assertIn('No reward was claimed', task.log_info.call_args.args[0])
+        task.log_warning.assert_not_called()
+        task.ensure_main.assert_called_once()
+
+    def test_daily_full_result_does_not_false_report_completion(self):
+        task = DailyTask.__new__(DailyTask)
+        task.info = {}
+        task.open_daily = MagicMock(return_value=(40, False))
+        task._daily_points = MagicMock(return_value=20)
+        task._daily_points_detected = MagicMock(return_value=True)
+        task.log_info = MagicMock()
+        task.log_warning = MagicMock()
+        task.log_error = MagicMock()
+        task.ensure_main = MagicMock()
+
+        result = task._verify_full_routine_result()
+
+        self.assertFalse(result)
+        task.log_info.assert_not_called()
+        warning = task.log_warning.call_args.args[0]
+        self.assertIn('incomplete', warning)
+        self.assertIn('20/100', warning)
 
 
 if __name__ == '__main__':

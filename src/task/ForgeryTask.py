@@ -3,6 +3,7 @@ import cv2
 from ok import Logger, find_color_rectangles
 from src.task.DomainTask import DomainTask
 from src.task.BaseWWTask import AreaLockedException
+from src.task.waveplates import daily_waveplate_quota
 
 logger = Logger.get_logger(__name__)
 
@@ -54,9 +55,11 @@ class ForgeryTask(DomainTask):
             self.ensure_main(time_out=10)
             return
 
-    def farm_forgery(self, daily=False, used_stamina=0, config=None):
+    def farm_forgery(self, daily=False, used_stamina=0, config=None,
+                     burn_all=False):
         if daily:
-            must_use = 180 - used_stamina
+            must_use = daily_waveplate_quota(
+                used_stamina, burn_all=burn_all)
         else:
             must_use = 0
         if config is None:

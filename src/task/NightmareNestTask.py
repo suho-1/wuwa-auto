@@ -33,8 +33,12 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
         self.name = "🌙 Nightmare Nest Task"
         self.description = "Auto Farm all Nightmare Nest"
         self.support_schedule_task = True
-        self.count_re = re.compile(r"(\d{1,2})/(\d{1,2})")
+        # Current English UI may add spaces around the slash and progress can
+        # reach three digits. Accept a common OCR substitution (vertical bar)
+        # without guessing missing digits.
+        self.count_re = re.compile(r"(\d{1,3})\s*[/|]\s*(\d{1,3})")
         self.queues = []
+        self._scan_diagnostics = []
         self._capture_success = False
         self._capture_mode = False
         self._unreachable_nests = set()
@@ -133,29 +137,37 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
         self._capture_success = False
         self._unreachable_nests.clear()
         self._unreachable_targets.clear()
+        self._scan_diagnostics = []
+        attempted_targets = 0
         WWOneTimeTask.run(self)
         self.ensure_main(time_out=30)
         self._init_queue()
         self.log_info('opened gray_book_boss')
         while nest := self.get_nest_to_go():
+            attempted_targets += 1
             try:
                 self.combat_nest(nest)
             except Exception as e:
                 self.log_warning(f"Error processing nest {getattr(nest, 'cache_key', nest)}: {e}. Skipping and recovering...")
                 self._mark_nest_unreachable(nest, reason=f'unexpected error: {e}')
                 self._recover_to_guidebook()
+        result = self._report_nest_result(attempted_targets, capture_mode=False)
         self.ensure_main(time_out=30)
+        return result
 
     def run_capture_mode(self):
         self._capture_mode = True
         self._capture_success = False
         self._unreachable_nests.clear()
         self._unreachable_targets.clear()
+        self._scan_diagnostics = []
+        attempted_targets = 0
         WWOneTimeTask.run(self)
         self.ensure_main(time_out=30)
         self._init_queue()
         self.log_info('opened gray_book_boss')
         while nest := self.get_nest_to_go():
+            attempted_targets += 1
             try:
                 self.combat_nest(nest)
             except Exception as e:
@@ -164,7 +176,34 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
                 self._recover_to_guidebook()
             if self._capture_success:
                 break
+        result = self._report_nest_result(attempted_targets, capture_mode=True)
         self.ensure_main(time_out=30)
+        return result
+
+    def _report_nest_result(self, attempted_targets, capture_mode):
+        """Report silent no-op scans as an explicit, actionable result."""
+        diagnostic_summary = '; '.join(getattr(self, '_scan_diagnostics', [])) or 'no scans recorded'
+        if attempted_targets == 0:
+            self.log_warning(
+                'Nightmare Nest finished without action: no eligible incomplete nest was found. '
+                f'Scan summary: {diagnostic_summary}',
+                notify=not capture_mode,
+                screenshot=True,
+            )
+            return False
+        if not self._capture_success:
+            self.log_warning(
+                f'Nightmare Nest evaluated {attempted_targets} target(s), but no Echo pickup was confirmed. '
+                f'Scan summary: {diagnostic_summary}',
+                notify=not capture_mode,
+                screenshot=True,
+            )
+            return False
+        self.log_info(
+            f'Nightmare Nest verified an Echo pickup after evaluating {attempted_targets} target(s).',
+            notify=not capture_mode,
+        )
+        return True
 
     def on_combat_check(self):
         if self._capture_mode:
@@ -330,6 +369,9 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
             actions.append(self.go_nightmare)
             actions.append(self.go_nightmare_scroll)
         self.queues = actions
+        self.log_info(
+            f'Nightmare Nest scan queue: configured={list(quests)}, '
+            f'actions={[action.__name__ for action in actions]}')
 
     def go_nightmare(self):
         self.open_boss_book('mengyan')
@@ -360,8 +402,28 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
             return False
 
     def find_nest(self):
-        counts = self.ocr(0.35, 0.13, 1, 0.96, match=self.count_re)
+        scan_args = (0.35, 0.13, 1, 0.96)
+        action_name = self.queues[0].__name__ if self.queues else 'unknown'
+        counts = self.ocr(*scan_args, match=self.count_re, log=True)
         counts.sort(key=lambda b: getattr(b, 'y', 0))
+
+        if not counts:
+            # A second, unfiltered OCR pass makes a changed fraction format or
+            # shifted UI distinguishable from "all nests complete".
+            raw_boxes = self.ocr(*scan_args, match=None, log=True)
+            raw_text = [str(getattr(box, 'name', '')) for box in raw_boxes]
+            summary = f'{action_name}: no progress counters; raw_ocr={raw_text[:30]}'
+            self._append_scan_diagnostic(summary)
+            self.log_warning(
+                'Nightmare Nest scan found no progress counters in region '
+                f'x=0.35..1.00, y=0.13..0.96 for {action_name}; raw OCR={raw_text[:30]}')
+            self._save_scan_region(action_name, scan_args)
+            return None
+
+        counter_text = [str(getattr(box, 'name', '')) for box in counts]
+        self._append_scan_diagnostic(f'{action_name}: counters={counter_text}')
+        self.log_info(f'Nightmare Nest raw progress OCR for {action_name}: {counter_text}')
+
         for count_box in counts:
             for match in re.finditer(self.count_re, count_box.name):
                 numerator = match.group(1)
@@ -371,7 +433,6 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
                     screen_height = max(self.height_of_screen(1), 1)
                     row_y = (count_box.y + count_box.height / 2) / screen_height
                     cache_key = self._make_nest_cache_key(count_box, denominator)
-                    action_name = self.queues[0].__name__ if self.queues else 'unknown'
                     if self._is_nest_unreachable(action_name, denom_int, row_y, cache_key):
                         self.log_info(f'skip cached unreachable nightmare nest: {cache_key}')
                         continue
@@ -399,6 +460,31 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
                                            y=int(count_box.y - count_box.height * 0.9), width=1, height=1)
                     nest_target.box = click_target
                     return nest_target
+        self.log_info(
+            f'Nightmare Nest scan found counters for {action_name}, but none were eligible and incomplete: '
+            f'{counter_text}')
+        return None
+
+    def _append_scan_diagnostic(self, message):
+        if not hasattr(self, '_scan_diagnostics'):
+            self._scan_diagnostics = []
+        self._scan_diagnostics.append(message)
+
+    def _save_scan_region(self, action_name, scan_args):
+        """Persist the exact normalized OCR region for resolution-specific diagnosis."""
+        try:
+            scan_box = self.box_of_screen(*scan_args)
+            frame = self.frame
+            region = frame[
+                scan_box.y:scan_box.y + scan_box.height,
+                scan_box.x:scan_box.x + scan_box.width,
+            ].copy()
+            self.screenshot(f'NightmareNest_{action_name}_scan', frame=region)
+            self.log_info(
+                f'Saved Nightmare Nest diagnostic region for {action_name}: '
+                f'pixel_box=({scan_box.x},{scan_box.y},{scan_box.width},{scan_box.height})')
+        except Exception as e:
+            logger.warning(f'Unable to save Nightmare Nest diagnostic region for {action_name}: {e}')
 
     def _make_nest_cache_key(self, count_box, denominator):
         action_name = self.queues[0].__name__ if self.queues else 'unknown'

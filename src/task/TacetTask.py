@@ -3,6 +3,7 @@ from ok import Logger
 from src.task.BaseCombatTask import BaseCombatTask, CharRevivedException, CharDeadException, NotInCombatException
 from src.task.WWOneTimeTask import WWOneTimeTask
 from src.task.BaseWWTask import AreaLockedException
+from src.task.waveplates import can_start_waveplate_run, daily_waveplate_quota
 
 logger = Logger.get_logger(__name__)
 
@@ -72,11 +73,13 @@ class TacetTask(WWOneTimeTask, BaseCombatTask):
             self.ensure_main(time_out=10)
             return
 
-    def farm_tacet(self, daily=False, used_stamina=0, config=None):
+    def farm_tacet(self, daily=False, used_stamina=0, config=None,
+                   burn_all=False):
         if config is None:
             config = self.config
         if daily:
-            must_use = 180 - used_stamina
+            must_use = daily_waveplate_quota(
+                used_stamina, burn_all=burn_all)
         else:
             must_use = 0
         self.info_incr('used stamina', 0)
@@ -87,7 +90,11 @@ class TacetTask(WWOneTimeTask, BaseCombatTask):
             if current == -1:
                 self.click_relative(0.04, 0.4, after_sleep=1)
                 current, back_up, total = self.get_stamina()
-            if total < self.stamina_once:
+            if not can_start_waveplate_run(
+                    current, total, self.stamina_once, must_use):
+                # A zero quota means "burn regenerated Waveplates", not
+                # "consume reserve Waveplate Crystals". Match DomainTask's
+                # safety check before entering another Tacet Field.
                 return self.not_enough_stamina()
 
             self.open_boss_book('wuyin')
