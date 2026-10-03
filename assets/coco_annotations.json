@@ -7223,6 +7223,26 @@
             "id": 312,
             "name": "active_character_home_screen",
             "supercategory": ""
+        },
+        {
+            "id": 313,
+            "name": "char_hsin",
+            "supercategory": ""
+        },
+        {
+            "id": 314,
+            "name": "char_jingran",
+            "supercategory": ""
+        },
+        {
+            "id": 315,
+            "name": "char_suoming",
+            "supercategory": ""
+        },
+        {
+            "id": 316,
+            "name": "box_resonance_cd",
+            "supercategory": ""
         }
     ]
 }
