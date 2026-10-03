@@ -50,6 +50,12 @@ class CombatCheck(BaseWWTask):
         self.combat_end_condition = None
         self.has_lavitator = False
         self.target_enemy_error_notified = False
+        # Capture/OCR can fail transiently while a window is being resized or
+        # a loading frame is presented. Track a streak so repeated failures are
+        # visible instead of looking like a normal end-of-combat transition.
+        self.combat_check_failures = 0
+        self.combat_check_failure_notice_at = 0
+        self.combat_check_failure_notice_threshold = 3
         self.cds = {
         }
         self.esc_count = 0
@@ -218,13 +224,32 @@ class CombatCheck(BaseWWTask):
     def in_combat(self, target=False):
         self.in_sleep_check = True
         try:
-            return self.do_check_in_combat(target)
-        except Exception as e:
+            result = self.do_check_in_combat(target)
+            # A clean frame means a previous transient capture/OCR error is no
+            # longer relevant. Do not carry the failure streak into the next
+            # fight.
+            self.combat_check_failures = 0
+            self.combat_check_failure_notice_at = 0
+            return result
+        except Exception as exc:
             # Do not leave stale combat and cooldown state behind after a
-            # capture/template/OCR failure.  A later trigger gets a clean
+            # capture/template/OCR failure. A later trigger gets a clean
             # detection pass instead of continuing a rotation from old state.
-            logger.error('do_check_in_combat:', e)
-            return self.reset_to_false(reason=f'combat check failed: {type(e).__name__}')
+            self.combat_check_failures = getattr(self, 'combat_check_failures', 0) + 1
+            logger.error('do_check_in_combat:', exc)
+            notice_threshold = getattr(self, 'combat_check_failure_notice_threshold', 3)
+            last_notice = getattr(self, 'combat_check_failure_notice_at', 0)
+            if self.combat_check_failures >= notice_threshold and last_notice < notice_threshold:
+                self.combat_check_failure_notice_at = notice_threshold
+                message = (
+                    f'Combat detection failed {self.combat_check_failures} times in a row; '
+                    'capture/OCR may be unavailable.'
+                )
+                if hasattr(self, 'log_error'):
+                    self.log_error(message, exc, notify=True)
+                else:
+                    logger.error(message, exc)
+            return self.reset_to_false(reason=f'combat check failed: {type(exc).__name__}')
         finally:
             self.in_sleep_check = False
 

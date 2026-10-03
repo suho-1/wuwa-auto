@@ -6,13 +6,14 @@ per routine per frame -- seven synchronous disk round-trips for data that only
 changes when a human edits it.
 
 This store keys a parsed copy of each file on ``(mtime_ns, size)``, so a
-repeated read is a single ``stat()`` plus a shallow dict copy, and it falls
-back to a full parse the moment the file actually changes (including changes
-made by the Qt GUI in another window).
+repeated read is a single ``stat()`` plus a deep copy, and it falls back to a
+full parse the moment the file actually changes (including changes made by the
+Qt GUI in another window).
 """
 
 from __future__ import annotations
 
+import copy
 import json
 import os
 import tempfile
@@ -49,7 +50,10 @@ class TaskConfigStore:
         if cached is not None and cached[0] == stamp:
             with self._lock:
                 self.hits += 1
-            return dict(cached[1])
+            # A shallow copy still aliases list/dict values such as task
+            # multi-selections. Return an independent tree so callers cannot
+            # mutate the process-wide cache without saving.
+            return copy.deepcopy(cached[1])
 
         try:
             with open(path, "r", encoding="utf-8") as stream:
@@ -60,9 +64,9 @@ class TaskConfigStore:
             data = {}
 
         with self._lock:
-            self._cache[name] = (stamp, data)
+            self._cache[name] = (stamp, copy.deepcopy(data))
             self.misses += 1
-        return dict(data)
+        return copy.deepcopy(data)
 
     def get(self, name: str, key: str, default=None):
         return self.load(name).get(key, default)
@@ -99,7 +103,7 @@ class TaskConfigStore:
         except OSError:
             stamp = None
         with self._lock:
-            self._cache[name] = (stamp, dict(config))
+            self._cache[name] = (stamp, copy.deepcopy(config))
 
     def invalidate(self, name: Optional[str] = None) -> None:
         with self._lock:

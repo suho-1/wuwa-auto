@@ -169,6 +169,16 @@ class ConfigStoreTests(unittest.TestCase):
         first["A"] = 999
         self.assertEqual(self.store.load("Demo"), {"A": 1})
 
+    def test_load_does_not_alias_nested_values(self):
+        self.store.save("Demo", {"Choices": ["A", {"enabled": True}]})
+        first = self.store.load("Demo")
+        first["Choices"][1]["enabled"] = False
+        first["Choices"].append("B")
+        self.assertEqual(
+            self.store.load("Demo"),
+            {"Choices": ["A", {"enabled": True}]},
+        )
+
     def test_update_merges(self):
         self.store.update("Demo", {"A": 1})
         self.store.update("Demo", {"B": 2})
@@ -304,6 +314,14 @@ class GridTests(unittest.TestCase):
     def test_cell_text_survives(self):
         block = self.render([["1", "Auto Combat", "[ON]"]], [4, 14, 8])
         self.assertTrue(any("Auto Combat" in plain(line) for line in block.splitlines()))
+
+    def test_mismatched_rows_fail_loudly(self):
+        with self.assertRaises(ValueError):
+            self.render([["only", "two"]], [4, 4, 4])
+
+    def test_invalid_widths_fail_loudly(self):
+        with self.assertRaises(ValueError):
+            grid.Grid([4, 0, 4])
 
 
 class TargetFormattingTests(unittest.TestCase):

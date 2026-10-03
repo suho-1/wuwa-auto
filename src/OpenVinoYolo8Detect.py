@@ -59,8 +59,11 @@ class OpenVinoYolo8Detect:
             self.available_devices = tuple(self.core.available_devices)
             self.input_layer = self.compiled_model.input(0)
             self.output_layer = self.compiled_model.output(0)
-            self.input_width = self.input_layer.shape[2]
-            self.input_height = self.input_layer.shape[3]
+            # OpenVINO exposes NCHW as (batch, channels, height, width).
+            # Keep the names aligned with their axes; the distinction matters
+            # for models exported with a non-square input shape.
+            self.input_height = self.input_layer.shape[2]
+            self.input_width = self.input_layer.shape[3]
             logger.info(
                 f"OpenVINO model compiled successfully for {device_used} {self.input_width}x{self.input_height}."
             )
@@ -102,7 +105,7 @@ class OpenVinoYolo8Detect:
     def _preprocess(self, img):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-        img, pad = self.letterbox(img, (self.input_width, self.input_height))
+        img, pad = self.letterbox(img, (self.input_height, self.input_width))
 
         image_data = np.array(img, dtype=np.float32) / 255.0
         image_data = np.transpose(image_data, (2, 0, 1))

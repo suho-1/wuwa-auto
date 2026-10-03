@@ -273,6 +273,13 @@ class FarmEchoTask(WWOneTimeTask, BaseCombatTask):
         self.total_weekly_number = 9
         self.total_boss_number = 20
         self.add_exit_after_config()
+        self.default_config.update({
+            'Recovery Retry Count': 3,
+        })
+        self.config_description.update({
+            'Recovery Retry Count': 'Maximum number of times to recover from a monthly-card or claim-popup interruption before failing the task.',
+        })
+        self.config_type['Recovery Retry Count'] = {'type': 'int', 'min': 0, 'max': 10}
         self._has_treasure = False
         self._in_realm = False
         self._farm_start_time = time.time()
@@ -313,17 +320,50 @@ class FarmEchoTask(WWOneTimeTask, BaseCombatTask):
 
     def run(self):
         WWOneTimeTask.run(self)
-        self.use_liberation = self.config.get('Use Liberation')
+        self.use_liberation = self.config.get('Use Liberation', True)
+
+        # A popup can interrupt any frame while a boss route is in progress.
+        # The old implementation retried by calling ``self.run()`` recursively,
+        # which repeated the one-time-task setup and could eventually exhaust
+        # the Python stack if the popup never disappeared. Keep the recovery
+        # bounded and re-enter only the farming dispatch.
         try:
-            return self.do_run()
-        except TaskDisabledException:
-            pass
-        except Exception as e:
-            logger.error('farm 4c error, try handle monthly card', e)
-            if self.handle_claim_button() or self.handle_monthly_card():
-                self.run()
-            else:
+            retry_limit = max(0, int(self.config.get('Recovery Retry Count', 3)))
+        except (TypeError, ValueError):
+            retry_limit = 3
+            self.log_warning('Invalid Recovery Retry Count; using the default of 3.')
+        return self._run_with_recovery(self.do_run, retry_limit)
+
+    def _run_with_recovery(self, operation, retry_limit):
+        """Run ``operation`` with bounded popup recovery.
+
+        Keeping this small state machine separate from :meth:`run` makes the
+        retry policy deterministic and prevents a failed popup handler from
+        recursively rebuilding the task's runtime state.
+        """
+        recovery_attempts = 0
+        while True:
+            try:
+                return operation()
+            except TaskDisabledException:
                 raise
+            except Exception as exc:
+                logger.error('farm 4c error, checking for an interrupting popup', exc)
+                recovered = self.handle_claim_button() or self.handle_monthly_card()
+                if not recovered or recovery_attempts >= retry_limit:
+                    if recovered and retry_limit == 0:
+                        self.log_warning('Farm interrupted and recovery retries are disabled.')
+                    elif recovered:
+                        self.log_error(
+                            f'Farm recovery failed after {recovery_attempts + 1} attempt(s).',
+                            exc,
+                            notify=True,
+                        )
+                    raise
+                recovery_attempts += 1
+                self.log_warning(
+                    f'Farm interrupted; retrying ({recovery_attempts}/{retry_limit}).'
+                )
 
     def do_run(self):
         target_name, profile = self.get_selected_boss_profile()

@@ -41,6 +41,22 @@ class TestTrainingPipeline(unittest.TestCase):
         self.assertEqual(hamming_distance(h1, h2), 0)
         self.assertGreater(hamming_distance(h1, h3), 0)
 
+    def test_non_square_letterbox_targets_keep_height_and_width_axes(self):
+        """Both detector backends should preserve NCHW axis order when letterboxing."""
+        image = np.zeros((240, 480, 3), dtype=np.uint8)
+
+        onnx_detector = OnnxYolo8Detect.__new__(OnnxYolo8Detect)
+        onnx_detector.preprocess_target_h = 320
+        onnx_detector.preprocess_target_w = 640
+        letterboxed, _ = onnx_detector._preprocess(image)
+        self.assertEqual(letterboxed.shape, (1, 3, 320, 640))
+
+        openvino_detector = OpenVinoYolo8Detect.__new__(OpenVinoYolo8Detect)
+        openvino_detector.input_height = 320
+        openvino_detector.input_width = 640
+        letterboxed, _ = openvino_detector._preprocess(image)
+        self.assertEqual(letterboxed.shape, (1, 3, 320, 640))
+
     def test_black_or_loading_screen(self):
         """Verify blank/black screens are detected and normal gameplay frames pass."""
         black_frame = np.zeros((200, 200, 3), dtype=np.uint8)
