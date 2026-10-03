@@ -2,8 +2,9 @@
 
 Scope: `src/`, `config.py`, `main.py`, `main_debug.py` (the vendored `ok/` framework was scanned
 but intentionally left untouched). Review performed with manual inspection plus `ruff`
-(`F`, `E`, `B`, `PLE`, `PLW` rule sets) and the Linux-runnable part of the test suite
-(149 tests + 978 subtests, all passing before and after the changes).
+(`F`, `E`, `B`, `PLE`, `PLW` rule sets) and the Linux-runnable part of the test suite.
+The follow-up hardening is covered by regression tests; full execution requires the pinned
+runtime dependencies and Windows-specific capture/input packages.
 
 ---
 
@@ -82,33 +83,40 @@ redundant `contourArea`/`astype` calls in that search.
 
 ---
 
-## 3. Recommendations (not changed — behavior-affecting, need owner judgment)
+## 3. Follow-up hardening implemented
 
-1. **`FarmEchoTask.run` retries via recursion** (`self.run()` after
-   `handle_claim_button()/handle_monthly_card()`): unbounded if a claim popup keeps
-   reappearing, and it re-executes `WWOneTimeTask.run` setup each time. Consider a bounded
-   `for attempt in range(N)` loop instead.
-2. **`CombatCheck.in_combat` swallows all exceptions** and implicitly returns `None`
-   (falsy → "not in combat"). Deliberate resilience, but a counter + escalation after N
-   consecutive failures would surface genuine capture/OCR breakage faster.
-3. **`config.py` registry scan** (`_find_most_recently_run_pc_exe`) walks every UserAssist GUID
-   on startup; caching the result per session would shave cold-start time on machines with
-   large registries.
-4. **Windows-only test coverage**: 5 test modules can't even be collected off-Windows because
-   `win32api`/`win32con` are imported at module scope in `src` deps. Guarding those imports
-   (as `CombatCheck` consumers do at runtime) would let CI run the logic tests on Linux.
-5. **`src/tui/grid.py`** uses `zip()` on sequences assumed equal-length; `strict=True`
-   (Python ≥ 3.10) would turn silent column truncation into a loud error.
+The review recommendations below were applied after the initial pass:
+
+1. **Bounded FarmEcho recovery:** `FarmEchoTask.run` now retries popup recovery in an
+   iterative state machine. The new `Recovery Retry Count` setting defaults to three and
+   prevents recursive task setup or unbounded stack growth when a claim/monthly-card popup
+   never clears.
+2. **Combat detection diagnostics:** `CombatCheck.in_combat` tracks consecutive capture/OCR
+   failures, resets the streak after a clean frame, and emits one actionable notification after
+   the third failure while retaining the existing safe reset behavior.
+3. **Executable discovery cache:** the two registry/UserAssist scans are cached per process,
+   with `clear_pc_exe_path_cache()` for launchers that install or update the game at runtime.
+   Running-client path resolution also searches ancestor layouts before using the legacy fallback.
+4. **TUI data safety and layout validation:** `TaskConfigStore` now deep-copies nested values so
+   callers cannot mutate cached multi-selection data accidentally. `src/tui/grid.py` validates
+   column counts and positive widths, using strict zips to reject malformed rows instead of
+   silently truncating them.
+5. **Non-square detector support:** ONNX Runtime and OpenVINO preprocessing/postprocessing now
+   pair height and width axes correctly for non-square model inputs.
+
+The remaining platform limitation is Windows-only test coverage: several test modules still
+cannot be collected off-Windows because `win32api`/`win32con` are imported at module scope in
+framework dependencies. Guarding those imports is a separate portability change.
 
 ---
 
 ## 4. Verification
 
 ```
-python -m compileall src          # clean
-ruff check src --select F,E9,PLE  # only the 4 documented Logger false positives remain
-pytest tests/test_game_display.py tests/test_tui.py \
-       tests/test_tui_frame.py tests/test_turning_logic.py
-# 149 passed, 978 subtests passed — identical to pre-change baseline
+python -m compileall src config.py main.py main_debug.py tests
+python -m unittest discover tests
 ```
-(The remaining test modules require Windows `pywin32`/`openvino` and cannot run in this sandbox.)
+The repository's test suite covers the new retry, detector-axis, combat-streak,
+config-store, and grid validation paths. Full execution requires the pinned
+runtime dependencies in `requirements.txt` and Windows for capture/input tests;
+the current review sandbox does not have those optional packages installed.

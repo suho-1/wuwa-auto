@@ -10,5 +10,6 @@
     "Use Liberation": true,
     "Switch to Healer before and after Combat": true,
     "Claim Boss Rewards": false,
+    "Recovery Retry Count": 3,
     "Exit After Task": false
 }

@@ -90,7 +90,7 @@ If you encounter issues, please check the following before opening an issue:
 
 ### Running from Source
 
-Python 3.12 is recommended. Python 3.9+ is required but other versions have not been fully tested.
+Python 3.12 is recommended. Python 3.10+ is required but other versions have not been fully tested.
 
 ```bash
 # Install or update dependencies

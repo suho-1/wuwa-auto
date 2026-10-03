@@ -78,6 +78,31 @@ class CombatCheckRecoveryTests(unittest.TestCase):
         self.assertFalse(task.in_sleep_check)
 
 
+class CombatCheckStreakTests(unittest.TestCase):
+    def test_transient_capture_failures_are_reset_after_a_clean_frame(self):
+        task = type("FlakyCombatCheck", (), {})()
+        task.in_sleep_check = False
+        task.reset_reasons = []
+        outcomes = iter([RuntimeError('capture'), RuntimeError('capture'), RuntimeError('capture'), True])
+
+        def check(_target):
+            outcome = next(outcomes)
+            if isinstance(outcome, Exception):
+                raise outcome
+            return outcome
+
+        task.do_check_in_combat = check
+        task.reset_to_false = lambda reason: task.reset_reasons.append(reason) or False
+
+        self.assertFalse(CombatCheck.in_combat(task))
+        self.assertFalse(CombatCheck.in_combat(task))
+        self.assertFalse(CombatCheck.in_combat(task))
+        self.assertEqual(task.combat_check_failures, 3)
+        self.assertTrue(CombatCheck.in_combat(task))
+        self.assertEqual(task.combat_check_failures, 0)
+        self.assertEqual(task.combat_check_failure_notice_at, 0)
+
+
 class BossTextMaskTests(unittest.TestCase):
     def test_sparse_white_pixels_fall_back_to_the_visible_orange_boss_text(self):
         """Coverage must be area / (height * width), not area / height * width."""

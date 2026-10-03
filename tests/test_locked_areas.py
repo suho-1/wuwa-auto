@@ -19,6 +19,35 @@ from src.task.ForgeryTask import ForgeryTask
 
 class LockedAreaTests(unittest.TestCase):
 
+    def test_farm_popup_recovery_is_bounded_and_reuses_dispatch(self):
+        task = FarmEchoTask.__new__(FarmEchoTask)
+        task.handle_claim_button = MagicMock(return_value=True)
+        task.handle_monthly_card = MagicMock(return_value=False)
+        task.log_warning = MagicMock()
+        task.log_error = MagicMock()
+        operation = MagicMock(side_effect=[RuntimeError('popup'), 'finished'])
+
+        result = task._run_with_recovery(operation, retry_limit=2)
+
+        self.assertEqual(result, 'finished')
+        self.assertEqual(operation.call_count, 2)
+        task.handle_claim_button.assert_called_once_with()
+        task.handle_monthly_card.assert_not_called()
+
+    def test_farm_popup_recovery_stops_after_retry_limit(self):
+        task = FarmEchoTask.__new__(FarmEchoTask)
+        task.handle_claim_button = MagicMock(return_value=True)
+        task.handle_monthly_card = MagicMock(return_value=False)
+        task.log_warning = MagicMock()
+        task.log_error = MagicMock()
+        operation = MagicMock(side_effect=RuntimeError('popup'))
+
+        with self.assertRaisesRegex(RuntimeError, 'popup'):
+            task._run_with_recovery(operation, retry_limit=2)
+
+        self.assertEqual(operation.call_count, 3)
+        task.log_error.assert_called_once()
+
     def test_log_warn_alias_real_call(self):
         """Verify log_warn exists and delegates to log_warning on BaseWWTask and NightmareNestTask."""
         task = NightmareNestTask.__new__(NightmareNestTask)

@@ -150,16 +150,10 @@ class OnnxYolo8Detect:  # Renamed class
         scores = []
         class_ids = []
 
-        # The 'gain' calculation below replicates the logic from the original OpenVINO-based code.
-        # In the original code, self.input_width stored model height, and self.input_height stored model width.
-        # The gain was calculated as: min(variable_storing_width / original_image_height, variable_storing_height / original_image_width).
-        # To replicate this with current variable names (where preprocess_target_h is height, preprocess_target_w is width):
-        # gain = min(self.preprocess_target_w / orig_shape[0], self.preprocess_target_h / orig_shape[1])
-        # This calculation for 'gain' might be incorrect if orig_shape is (height, width) as it would mix width/height ratios.
-        # A more standard gain calculation would be:
-        # gain = min(self.preprocess_target_h / orig_shape[0], self.preprocess_target_w / orig_shape[1])
-        # However, to adhere to "do not fix bugs", the original logic is replicated.
-        gain = min(self.preprocess_target_w / orig_shape[0], self.preprocess_target_h / orig_shape[1])
+        # ``orig_shape`` is (height, width), matching the order used by
+        # ``letterbox``. Keep the axes paired here so non-square ONNX inputs
+        # map detections back to the source frame correctly.
+        gain = min(self.preprocess_target_h / orig_shape[0], self.preprocess_target_w / orig_shape[1])
 
         # Adjust detections for padding
         # padding is (pad_top, pad_left)

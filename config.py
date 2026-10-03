@@ -1,5 +1,6 @@
 import os
 import re
+from functools import lru_cache
 from pathlib import Path
 
 from ok import Box, ConfigOption, Icon
@@ -8,6 +9,7 @@ from src.task.process_feature import process_feature
 version = "v3.6.7"
 
 
+@lru_cache(maxsize=1)
 def _find_most_recently_run_pc_exe():
     try:
         import codecs
@@ -41,6 +43,7 @@ def _find_most_recently_run_pc_exe():
     return max(candidates, default=(0, None))[1]
 
 
+@lru_cache(maxsize=1)
 def _find_pc_exe_from_registry():
     try:
         import winreg
@@ -109,11 +112,48 @@ def _find_pc_exe_near_registered_path(registered_path):
     return None
 
 
+def clear_pc_exe_path_cache():
+    """Clear per-process executable discovery results.
+
+    Discovery normally happens once during startup. The explicit invalidation
+    hook is useful to launchers that install or update the game while the
+    helper remains running, and keeps the cached registry scan testable.
+    """
+    _find_most_recently_run_pc_exe.cache_clear()
+    _find_pc_exe_from_registry.cache_clear()
+
+
+def _game_exe_from_running_path(running_path):
+    """Resolve the game executable from a running client executable.
+
+    The shipping client is usually four parents below the install root, but
+    launcher updates and custom installs can add or remove a directory. Prefer
+    real candidates while walking upwards and retain the historical layout as
+    a deterministic fallback when the path is only a process-record string.
+    """
+    path = Path(os.path.expandvars(str(running_path)))
+    if path.name.casefold() == 'wuthering waves.exe' and path.is_file():
+        return str(path)
+
+    directories = (path.parent, *path.parents)
+    for directory in directories:
+        candidates = (
+            directory / 'Wuthering Waves.exe',
+            directory / 'Wuthering Waves Game' / 'Wuthering Waves.exe',
+        )
+        for candidate in candidates:
+            if candidate.is_file():
+                return str(candidate)
+
+    parents = path.parents
+    game_exe_folder = parents[3] if len(parents) > 3 else path.parent
+    return str(game_exe_folder / 'Wuthering Waves.exe')
+
+
 def calculate_pc_exe_path(running_path):
     if running_path is None:
         return _find_most_recently_run_pc_exe() or _find_pc_exe_from_registry()
-    game_exe_folder = Path(running_path).parents[3]
-    return str(game_exe_folder / "Wuthering Waves.exe")
+    return _game_exe_from_running_path(running_path)
 
 
 def blur_area(width, height):

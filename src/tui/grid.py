@@ -63,6 +63,8 @@ class Grid:
 
     def __init__(self, widths: Sequence[int], border: str = "green"):
         self.widths = list(widths)
+        if not self.widths or any(width < 1 for width in self.widths):
+            raise ValueError('Grid widths must contain positive values')
         self.border = border
         self.lines = []
 
@@ -81,9 +83,15 @@ class Grid:
         self.lines.append(self._edge("└", "┴", "┘"))
 
     def row(self, cells: Sequence[CellLike], styles: Sequence[str], justifies: Sequence[str]) -> None:
+        expected = len(self.widths)
+        if len(cells) != expected or len(styles) != expected or len(justifies) != expected:
+            raise ValueError(
+                f'Grid row has {len(cells)} cells, {len(styles)} styles, and '
+                f'{len(justifies)} justifications; expected {expected} of each.'
+            )
         padded = [_pad(cell, style, width, justify)
                   for cell, style, width, justify
-                  in zip(cells, styles, self.widths, justifies)]
+                  in zip(cells, styles, self.widths, justifies, strict=True)]
         self.lines.append(f"[{self.border}]│[/{self.border}]"
                           + f"[{self.border}]│[/{self.border}]".join(padded)
                           + f"[{self.border}]│[/{self.border}]")
@@ -106,9 +114,14 @@ def render_grid(title: str, headers: Sequence[CellLike], rows: Sequence[Sequence
                 widths: Sequence[int], styles: Sequence[str], justifies: Sequence[str],
                 border: str = "green", title_style: str = "bold yellow") -> str:
     """Build a complete bordered grid, title included, as one string."""
+    expected = len(widths)
+    if len(headers) != expected or len(styles) != expected or len(justifies) != expected:
+        raise ValueError(
+            f'Grid headers/styles/justifications must all contain {expected} values.'
+        )
     grid = Grid(widths, border)
     header = [Cell(str(text), f"[bold]{escape(_clip(str(text), width))}[/bold]")
-              for text, width in zip(headers, widths)]
+              for text, width in zip(headers, widths, strict=True)]
     if title:
         grid.lines.append(grid.title_line(_clip(title, grid.frame_width), title_style))
     grid.rule()
