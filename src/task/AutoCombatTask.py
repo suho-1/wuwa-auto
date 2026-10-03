@@ -49,6 +49,15 @@ class AutoCombatTask(BaseCombatTask, TriggerTask):
         ret = False
         if not self.scene.in_team(self.in_team_and_world):
             return ret
+
+        # The Illusive Realm has a different combat HUD and does not expose the
+        # normal target/health-bar cues used by ``in_combat``.  It has its own
+        # deliberately simple input routine below; without this early branch
+        # that routine was unreachable and auto combat never acted in the Realm.
+        if self.in_illusive_realm():
+            self.realm_perform()
+            return True
+
         self.use_liberation = self.config.get('Use Liberation')
         if not self.use_liberation and not self.in_world():  # 仅大世界生效
             self.use_liberation = True
@@ -60,7 +69,15 @@ class AutoCombatTask(BaseCombatTask, TriggerTask):
                 if not switched_to_healer:
                     self.switch_healer()
                     switched_to_healer = True
-                self.get_current_char().perform()
+                current_char = self.get_current_char(raise_exception=False)
+                if current_char is None:
+                    # The party HUD can change during a transition.  Do not
+                    # turn that short-lived recognition failure into an
+                    # AttributeError that disables the trigger task.
+                    self.reset_to_false(reason='current character is unavailable')
+                    logger.warning('auto combat stopped: current character is unavailable')
+                    break
+                current_char.perform()
             except CharDeadException:
                 self.log_error('Characters dead', notify=True)
                 break
